@@ -1,7 +1,7 @@
 {
-  "title": "Design Tokens V3",
-  "subtitle": "Refonte des tokens & de la palette de couleurs",
-  "description": "Pourquoi on a ouvert ce chantier, ce qui change concrètement, et comment on le déploie.",
+  "title": "Construire de l'UI sans deviner",
+  "subtitle": "Des règles écrites pour les couleurs, la lisibilité et les composants",
+  "description": "Design Tokens V3 — pourquoi on a ouvert ce chantier, ce qui change concrètement, et comment on le déploie.",
   "date": "2026-08-12",
   "tags": ["Design System", "Tokens", "Accessibilité"],
   "accent": "#FF6726"

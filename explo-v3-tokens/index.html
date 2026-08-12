@@ -305,6 +305,11 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .tier .role{font-family:var(--sans);font-weight:700;font-size:23px;margin-top:16px}
 .tier .what{font-family:var(--sans);font-size:20px;line-height:1.44;color:var(--text-secondary);margin-top:10px}
 .tier .ex{font:500 14px/1.7 var(--mono);color:var(--ink-400);margin-top:20px;word-break:break-word}
+.tier .abbr{font:500 17px/1.4 var(--mono);letter-spacing:.02em;color:var(--text-secondary);margin-top:16px}
+.tier .abbr b{font-weight:700;color:var(--text-default);background:var(--ink-050);
+  border:1px solid var(--border-subtle);padding:4px 9px;margin-right:11px}
+.tier.on .abbr{color:rgba(255,255,255,.7)}
+.tier.on .abbr b{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff}
 .tier.on{background:var(--ink-1000);color:#fff}
 .tier.on .num{color:rgba(255,255,255,.55)}
 .tier.on .what{color:rgba(255,255,255,.72)}
@@ -561,24 +566,27 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="tiers">
       <div class="tier">
         <div class="num">NIVEAU 1 — EXISTE DÉJÀ</div><div class="name">La valeur</div>
+        <div class="abbr"><b>ref</b> références</div>
         <div class="what">Une couleur, une taille. Rien n'indique à quoi elle sert : c'est juste <span class="tk">#178DFE</span>.</div>
         <div class="bar" style="background:var(--blue)"></div>
       </div>
       <div class="tier on">
         <div class="badge">CE QUI MANQUE</div>
         <div class="num">NIVEAU 2</div><div class="name">Le rôle</div>
+        <div class="abbr"><b>sys</b> systémiques</div>
         <div class="what">À quoi ça sert : « la couleur d'erreur », « la bordure d'un champ actif ». C'est tout le sujet de ce chantier.</div>
         <div class="bar" style="background:var(--orange)"></div>
       </div>
       <div class="tier">
         <div class="num">NIVEAU 3 — SOUS CONDITION</div><div class="name">L'exception</div>
+        <div class="abbr"><b>comp</b> composants spécifiques</div>
         <div class="what">Le besoin propre d'un composant, quand aucun rôle général ne convient.</div>
         <div class="bar" style="background:var(--ink-800)"></div>
       </div>
     </div>
     <div class="rule-strip">
       <span class="lbl">La règle</span>
-      <span>On utilise toujours le niveau le plus haut qui convient. Dans le reste du deck ils s'appellent <b>ref</b>, <b>sys</b> et <b>comp</b>.</span>
+      <span>On utilise toujours le niveau le plus haut qui convient : <b>comp &gt; sys &gt; ref</b>.</span>
     </div>
     </div>
   </div>

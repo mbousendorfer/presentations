@@ -210,6 +210,7 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
    === COMPOSANT : comparateur avant / après ===============================
    ========================================================================== */
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:26px;flex:1;min-height:0;margin-top:24px}
+.ba.solo{grid-template-columns:1fr}
 .panel{border:3px solid var(--border-strong);display:flex;flex-direction:column;min-height:0;background:var(--surface-raised)}
 .panel>header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;flex:none;
   border-bottom:3px solid var(--border-strong);
@@ -665,9 +666,9 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
       <a data-go="9"><span class="rn">II</span><span class="rt">Pourquoi maintenant</span><span class="rp">09 — 12</span></a>
       <a data-go="13"><span class="rn">III</span><span class="rt">La nouvelle palette</span><span class="rp">13 — 19</span></a>
       <a data-go="20"><span class="rn">IV</span><span class="rt">La couche des rôles</span><span class="rp">20 — 24</span></a>
-      <a data-go="25"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">25 — 30</span></a>
-      <a data-go="31"><span class="rn">VI</span><span class="rt">Les exceptions</span><span class="rp">31 — 32</span></a>
-      <a data-go="33"><span class="rn">VII</span><span class="rt">Le déploiement</span><span class="rp">33 — 35</span></a>
+      <a data-go="25"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">25 — 32</span></a>
+      <a data-go="33"><span class="rn">VI</span><span class="rt">Les exceptions</span><span class="rp">33 — 34</span></a>
+      <a data-go="35"><span class="rn">VII</span><span class="rt">Le déploiement</span><span class="rp">35 — 37</span></a>
     </nav>
   </div>
   <div class="progress"><i></i></div>
@@ -1157,8 +1158,40 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">V</div>
     <h2 class="dv-t">Avant / après</h2>
     <p class="dv-p">Les mêmes composants, rebranchés sur les rôles. Ce qui s'aligne sur une règle commune, ce qui se complète — et ce qui disparaît parce que ce n'était pas réellement utilisable.</p>
-    <div class="dv-r">25 — 30</div>
+    <div class="dv-r">25 — 32</div>
   </div></div>
+  <div class="progress"><i></i></div>
+  <div class="folio"></div>
+</section>
+
+<!-- === LES DROPDOWN — AVANT === -->
+<section class="slide" data-title="Dropdown — avant" data-sec="V · Avant / après">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>V</b> · Avant / après</span></div>
+  <div class="canvas">
+    <div class="kicker">Preuve 1/5 · avant</div>
+    <h2>Les <span class="hi">dropdown</span>, aujourd'hui</h2>
+    <p class="lede">Survoler une ligne la colore en bleu — <b>la même couleur que la sélection</b>.</p>
+    <div class="ba solo">
+      <div class="panel before"><header><span>Avant</span><span class="tag">survol bleu, comme la sélection</span></header><img src="img/s-dropdown-avant.png" alt="Dropdown avant migration : les lignes survolées sont bleues, comme la ligne sélectionnée"></div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div>
+  <div class="folio"></div>
+</section>
+
+<!-- === LES DROPDOWN — APRÈS === -->
+<section class="slide" data-title="Dropdown — après" data-sec="V · Avant / après">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>V</b> · Avant / après</span></div>
+  <div class="canvas">
+    <div class="kicker">Preuve 1/5 · après</div>
+    <h2>Les <span class="hi">dropdown</span>, après</h2>
+    <p class="lede">Le survol passe en gris neutre : <b>le bleu ne signale plus que la sélection</b>.</p>
+    <div class="ba solo">
+      <div class="panel after"><header><span>Après</span><span class="tag">survol neutre · même cadrage que la slide précédente</span></header><img src="img/s-dropdown-apres.png" alt="Dropdown après migration : les lignes survolées sont grises, seul le sélectionné reste bleu"></div>
+    </div>
+  </div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
 </section>
@@ -1168,7 +1201,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>V</b> · Avant / après</span></div>
   <div class="canvas">
-    <div class="kicker">Preuve 1/4</div>
+    <div class="kicker">Preuve 2/5</div>
     <h2>Les <span class="hi">boutons</span></h2>
     <div class="ba">
       <div class="panel before"><header><span>Avant</span><span class="tag">tokens ref en dur</span></header><img src="img/s11-btn-avant.png" alt="Matrice des boutons avant migration"></div>
@@ -1184,7 +1217,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>V</b> · Avant / après</span></div>
   <div class="canvas">
-    <div class="kicker">Preuve 2/4</div>
+    <div class="kicker">Preuve 3/5</div>
     <h2>L'<span class="hi">infobox</span></h2>
     <p class="lede"><b>Aucun token inventé pour l'occasion</b> : tout existait déjà pour le Tag et le Label.</p>
     <div class="ba">
@@ -1201,7 +1234,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>V</b> · Avant / après</span></div>
   <div class="canvas">
-    <div class="kicker">Preuve 3/4</div>
+    <div class="kicker">Preuve 4/5</div>
     <h2>Tags &amp; <span class="hi">status</span></h2>
     <div class="ba-rows" style="grid-template-rows:repeat(2,1fr)">
       <div class="ba-row">
@@ -1225,7 +1258,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>V</b> · Avant / après</span></div>
   <div class="canvas">
-    <div class="kicker">Preuve 4/4</div>
+    <div class="kicker">Preuve 5/5</div>
     <h2>Le <span class="hi">segmented control</span></h2>
     <p class="lede">Un état <span class="tk">clicked</span> qui manquait, et le 36&nbsp;px fixe remplacé par le token de hauteur.</p>
     <div class="ba">
@@ -1251,7 +1284,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
       </div></div>
       <div class="claim"><span class="n">02</span><div class="cb">
         <h3>Tabs</h3>
-        <p>Le survol et le clic suivent enfin la même règle que les autres éléments cliquables. C'est le plus gros changement de comportement du lot.</p>
+        <p>Le survol et le clic suivent enfin la même règle que les autres éléments cliquables — un changement de comportement notable, juste derrière les dropdown.</p>
       </div></div>
       <div class="claim"><span class="n">03</span><div class="cb">
         <h3>Checkbox, radio &amp; radio cards</h3>
@@ -1278,7 +1311,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">VI</div>
     <h2 class="dv-t">Les exceptions</h2>
     <p class="dv-p">Certains composants ont un besoin qu'aucune règle générale ne couvre. Voilà comment on les traite sans rouvrir la porte au désordre.</p>
-    <div class="dv-r">31 — 32</div>
+    <div class="dv-r">33 — 34</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1326,7 +1359,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">VII</div>
     <h2 class="dv-t">Le déploiement</h2>
     <p class="dv-p">Trois étapes, dans cet ordre, avec le même critère de sortie à chaque fois — puis quatre chantiers, un par tribe.</p>
-    <div class="dv-r">33 — 35</div>
+    <div class="dv-r">35 — 37</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>

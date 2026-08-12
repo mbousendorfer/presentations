@@ -1,0 +1,8 @@
+# configuration locale de l'assistant / du serveur de prévisualisation
+.claude/
+
+# macOS
+.DS_Store
+
+# node, si un jour on ajoute des dépendances
+node_modules/

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Présentations — Matthieu Bousendorfer</title>
+<meta name="description" content="Les présentations, une par dossier.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Averta Std';src:url('assets/fonts/AvertaStd-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('assets/fonts/AvertaStd-Semibold.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('assets/fonts/AvertaStd-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('assets/fonts/AvertaStd-Extrabold.woff2') format('woff2');font-weight:800;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('assets/fonts/AvertaStd-Black.woff2') format('woff2');font-weight:900;font-display:swap}
+
+:root{
+  --ink:#101827; --ink-soft:#5E6E86; --ink-400:#8D9AAB;
+  --rule:rgba(16,24,39,.12); --hair:rgba(16,24,39,.07);
+  --bg:#fff; --accent:#FF6726;
+  --disp:'Averta Std',system-ui,sans-serif;
+  --mono:'Azeret Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--disp);-webkit-font-smoothing:antialiased}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+header{border-bottom:3px solid var(--ink);padding:26px 0 20px;margin-bottom:70px}
+.bar{display:flex;justify-content:space-between;align-items:baseline;gap:20px;
+  font:500 13px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.bar span:last-child{color:var(--ink-soft)}
+
+.hero{margin-bottom:64px}
+.hero .kicker{font:700 13px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-weight:900;font-size:clamp(44px,7vw,84px);line-height:1.02;letter-spacing:-.04em;margin-top:18px}
+.hero p{font-size:clamp(18px,2.2vw,23px);line-height:1.5;color:var(--ink-soft);margin-top:20px;max-width:640px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:26px;padding-bottom:90px}
+.card{display:flex;flex-direction:column;border:2px solid var(--ink);padding:30px 32px 34px;
+  text-decoration:none;color:inherit;position:relative;background:#fff;
+  transition:transform .18s ease,box-shadow .18s ease}
+.card::after{content:'';position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--accent)}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 0 -4px rgba(16,24,39,.1)}
+.card-meta{font:700 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-400)}
+.card h2{font-weight:900;font-size:32px;line-height:1.06;letter-spacing:-.03em;margin-top:14px}
+.card-sub{font-weight:700;font-size:17px;line-height:1.35;margin-top:10px}
+.card-desc{font-size:16px;line-height:1.5;color:var(--ink-soft);margin-top:10px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.tags span{font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--ink-soft);
+  border:1px solid var(--rule);padding:6px 8px}
+.go{margin-top:auto;padding-top:24px;font:700 12px/1 var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent)}
+
+.empty{border:2px dashed var(--rule);padding:40px;color:var(--ink-soft);font-size:17px;line-height:1.5}
+footer{border-top:1px solid var(--rule);padding:26px 0 60px;
+  font:500 12px/1.6 var(--mono);letter-spacing:.08em;color:var(--ink-400)}
+
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0B1220;--ink:#EAF0FA;--ink-soft:#9AA8BC;--ink-400:#6C7C93;
+        --rule:rgba(255,255,255,.16);--hair:rgba(255,255,255,.08)}
+  .card{background:#0F1728;border-color:rgba(255,255,255,.22)}
+  .card:hover{box-shadow:0 14px 0 -4px rgba(255,255,255,.08)}
+  header{border-bottom-color:rgba(255,255,255,.32)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="bar"><span>Matthieu Bousendorfer</span><span>Présentations</span></div>
+  </header>
+
+  <section class="hero">
+    <div class="kicker">Archive</div>
+    <h1>Présentations</h1>
+    <p>Chaque présentation est une page autonome : flèches pour naviguer, <b>O</b> pour le plan, <b>F</b> pour le plein écran.</p>
+  </section>
+
+  <main class="grid">
+      <a class="card" href="explo-v3-tokens/" style="--accent:#FF6726">
+        <div class="card-meta">août 2026 · 38 slides</div>
+        <h2>Design Tokens V3</h2>
+        <p class="card-sub">Refonte des tokens &amp; de la palette de couleurs</p>
+        <p class="card-desc">Pourquoi on a ouvert ce chantier, ce qui change concrètement, et comment on le déploie.</p>
+        <div class="tags"><span>Design System</span><span>Tokens</span><span>Accessibilité</span></div>
+        <span class="go">Ouvrir la présentation →</span>
+      </a>
+      <a class="card" href="filters-consistency/" style="--accent:#FF6726">
+        <div class="card-meta">17 slides</div>
+        <h2>agorapulse · filters — Consistency 2025</h2>
+        
+        
+        
+        <span class="go">Ouvrir la présentation →</span>
+      </a>
+  </main>
+
+  <footer>Généré automatiquement à chaque push — 2 présentations.</footer>
+</div>
+</body>
+</html>

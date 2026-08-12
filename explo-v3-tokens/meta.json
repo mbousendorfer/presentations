@@ -1,0 +1,8 @@
+{
+  "title": "Design Tokens V3",
+  "subtitle": "Refonte des tokens & de la palette de couleurs",
+  "description": "Pourquoi on a ouvert ce chantier, ce qui change concrètement, et comment on le déploie.",
+  "date": "2026-08-12",
+  "tags": ["Design System", "Tokens", "Accessibilité"],
+  "accent": "#FF6726"
+}

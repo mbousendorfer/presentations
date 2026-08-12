@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>agorapulse · filters — Consistency 2025</title>
+
+<!-- ===========================================================
+     FONTS
+     Averta Std is the Agorapulse brand face (used in the Figma).
+     If it is installed locally it is used verbatim; otherwise we
+     fall back to Mulish, the closest free geometric-humanist sans.
+     =========================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================================
+   DESIGN TOKENS — pulled straight from the Figma variables
+   =========================================================== */
+:root{
+  --ref-color-orange-100:#FF6726;   /* brand orange, cover + closing */
+  --ref-color-orange-150:#C83E07;   /* slide titles */
+  --ref-color-grey-80:#5D6A82;      /* body copy */
+  --ref-color-white:#FFFFFF;
+
+  --stage-w:1920px;
+  --stage-h:1080px;
+
+  --font-brand:'Averta Std','Averta',Mulish,-apple-system,sans-serif;
+}
+
+/* ===========================================================
+   RESET
+   =========================================================== */
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;margin:0;padding:0;}
+body{
+  background:#0E1420;
+  font-family:var(--font-brand);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+h1,h2,h3,p,ul,li{margin:0;padding:0;font-size:inherit;font-weight:inherit;}
+
+/* ===========================================================
+   FIXED 16:9 STAGE
+   The deck is authored at exactly 1920x1080. The whole stage is
+   scaled uniformly to fit the viewport (letterbox / pillarbox).
+   Slide content NEVER reflows — phones get the same composition.
+   =========================================================== */
+.deck-viewport{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.stage{
+  position:relative;
+  width:var(--stage-w);
+  height:var(--stage-h);
+  transform-origin:center center;
+  flex:none;
+}
+
+/* ---- Slides ------------------------------------------------
+   Visibility is driven by .active using visibility/opacity only.
+   Never display:none — later layout rules would override it.
+   ----------------------------------------------------------- */
+.slide{
+  position:absolute;
+  inset:0;
+  width:var(--stage-w);
+  height:var(--stage-h);
+  border-radius:40px;
+  overflow:hidden;
+  background:var(--ref-color-white);
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .45s ease, visibility .45s;
+}
+.slide.active{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+.slide--orange{background:var(--ref-color-orange-100);}
+
+/* ===========================================================
+   TYPOGRAPHY — exact Figma values
+   =========================================================== */
+.title{
+  position:absolute;
+  font-size:40px;
+  font-weight:700;
+  line-height:normal;
+  color:var(--ref-color-orange-150);
+  white-space:nowrap;
+  word-break:break-word;
+}
+.body{
+  position:absolute;
+  font-size:25px;
+  font-weight:400;
+  line-height:35px;
+  color:var(--ref-color-grey-80);
+  word-break:break-word;
+}
+.body b,.body strong{font-weight:700;}
+.body em{font-style:italic;}
+.body .accent{color:var(--ref-color-orange-100);}
+.p{margin:0 0 8px;}
+.p:last-child{margin-bottom:0;}
+/* Empty paragraph used by Figma to space blocks apart */
+.gap{height:35px;}
+.list{list-style:disc;padding-left:37.5px;}
+.list li{margin-bottom:16px;}
+.list li:last-child{margin-bottom:0;}
+
+/* ===========================================================
+   MEDIA — every asset is placed at its exact Figma x/y/w/h
+   =========================================================== */
+.asset{position:absolute;display:block;max-width:none;object-fit:cover;pointer-events:none;}
+/* UI mockups sit on a soft elevation in Figma. The PNG export clips that
+   shadow at the node bounds, so a tight equivalent is restored in CSS. */
+.mock{filter:drop-shadow(0 2px 11px rgba(93,106,130,.18));}
+
+/* ===========================================================
+   ENTRANCE ANIMATION — staggered, only on the active slide
+   =========================================================== */
+.reveal{opacity:0;transform:translateY(16px);}
+.slide.active .reveal{animation:riseIn .62s cubic-bezier(.22,.9,.28,1) forwards;}
+.slide.active .reveal:nth-child(1){animation-delay:.05s;}
+.slide.active .reveal:nth-child(2){animation-delay:.13s;}
+.slide.active .reveal:nth-child(3){animation-delay:.21s;}
+.slide.active .reveal:nth-child(4){animation-delay:.29s;}
+.slide.active .reveal:nth-child(5){animation-delay:.37s;}
+.slide.active .reveal:nth-child(6){animation-delay:.45s;}
+.slide.active .reveal:nth-child(7){animation-delay:.53s;}
+@keyframes riseIn{to{opacity:1;transform:translateY(0);}}
+
+/* Cover decorations drift in slowly */
+.slide.active .blob{animation:blobIn 1.4s cubic-bezier(.22,.9,.28,1) both;}
+@keyframes blobIn{from{opacity:0;transform:var(--blob-tf,none) scale(1.06);}to{opacity:1;}}
+
+@media (prefers-reduced-motion:reduce){
+  .reveal,.slide.active .reveal,.slide.active .blob{animation:none!important;opacity:1!important;transform:none!important;}
+  .slide{transition:none;}
+}
+
+/* ===========================================================
+   DECK CHROME (outside the stage — safe to use clamp here)
+   =========================================================== */
+.chrome{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  display:flex;
+  align-items:center;
+  gap:clamp(10px,1.4vw,20px);
+  padding:clamp(10px,1.6vh,20px) clamp(14px,2vw,28px);
+  font-family:var(--font-brand);
+  font-size:clamp(11px,1.1vw,14px);
+  color:rgba(255,255,255,.55);
+  letter-spacing:.04em;
+  pointer-events:none;
+  z-index:20;
+}
+.chrome .bar{
+  position:relative;
+  flex:1;
+  height:2px;
+  background:rgba(255,255,255,.14);
+  border-radius:2px;
+  overflow:hidden;
+}
+.chrome .bar span{
+  position:absolute;inset:0;
+  transform-origin:left center;
+  background:var(--ref-color-orange-100);
+  transition:transform .45s cubic-bezier(.22,.9,.28,1);
+}
+.chrome .count{font-variant-numeric:tabular-nums;min-width:5ch;text-align:right;}
+
+/* Inline edit affordance */
+.editbtn{
+  position:fixed;top:0;left:0;
+  width:56px;height:56px;
+  z-index:30;
+  border:0;background:transparent;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .2s;
+}
+.editbtn:hover,.editbtn:focus-visible{opacity:1;}
+.editbtn::after{
+  content:'✎';
+  position:absolute;top:12px;left:12px;
+  width:26px;height:26px;line-height:26px;text-align:center;
+  border-radius:8px;
+  background:rgba(255,255,255,.14);
+  color:#fff;font-size:14px;
+}
+body.editing .slide.active [contenteditable]{
+  outline:1px dashed rgba(255,103,38,.6);
+  outline-offset:4px;
+  border-radius:4px;
+}
+body.editing .editbtn{opacity:1;}
+body.editing .editbtn::after{background:var(--ref-color-orange-100);}
+.toast{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-140%);
+  background:#fff;color:#0E1420;
+  font-family:var(--font-brand);font-size:14px;font-weight:600;
+  padding:10px 18px;border-radius:999px;
+  box-shadow:0 8px 30px rgba(0,0,0,.28);
+  transition:transform .32s cubic-bezier(.22,.9,.28,1), opacity .32s, visibility .32s;
+  opacity:0;
+  visibility:hidden;
+  z-index:40;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible;}
+</style>
+</head>
+<body>
+
+<div class="deck-viewport">
+<div class="stage" id="stage">
+
+  <!-- ============================================================
+       SLIDE 01 — Cover  (Figma node 40:57244)
+       ============================================================ -->
+  <section class="slide slide--orange active" data-title="Cover">
+    <!-- bottom-left brand mark, rotated 180° in Figma -->
+    <img class="asset blob" src="assets/blob.svg" alt=""
+         style="left:-180px;top:634px;width:1036px;height:1016px;transform:rotate(180deg);--blob-tf:rotate(180deg);">
+
+    <p class="body reveal" contenteditable="false"
+       style="left:921px;top:609px;font-size:35px;line-height:50px;color:var(--ref-color-white);opacity:.69;white-space:nowrap;">2025</p>
+
+    <p class="body reveal" contenteditable="false"
+       style="left:564px;top:540px;width:793px;font-size:40px;line-height:normal;color:var(--ref-color-white);text-align:center;">Consistency</p>
+
+    <!-- top-right brand mark -->
+    <img class="asset blob" src="assets/blob2.svg" alt=""
+         style="left:1092px;top:-572px;width:1036px;height:1016px;">
+
+    <!-- logo lockup : agorapulse · filters -->
+    <img class="asset reveal" src="assets/logo-agorapulse.svg" alt="agorapulse"
+         style="left:570px;top:444px;width:429px;height:81px;">
+    <div class="asset reveal" style="left:1023px;top:484px;width:8px;height:8px;border-radius:28px;background:#fff;"></div>
+    <p class="body reveal" contenteditable="false"
+       style="left:1059px;top:424px;font-size:82px;font-weight:200;line-height:1.23;color:var(--ref-color-white);white-space:nowrap;">filters</p>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 02 — Contexte  (46:55044)
+       ============================================================ -->
+  <section class="slide" data-title="Contexte">
+    <h2 class="title reveal" contenteditable="false" style="left:80px;top:80px;">Contexte</h2>
+
+    <div class="body reveal" contenteditable="false" style="left:80px;top:204px;width:591px;">
+      <ul class="list">
+        <li>Plusieurs façons de filtrer dans le produit</li>
+        <li>Incohérences visuelles et fonctionnelles</li>
+        <li>Objectif : rendre les filtres prévisibles et faciles à utiliser</li>
+      </ul>
+    </div>
+
+    <img class="asset mock reveal" src="assets/s02-facebook.png"    alt="" style="left:345px;top:589px;width:1096px;height:370px;">
+    <img class="asset mock reveal" src="assets/s02-ig-audience.png" alt="" style="left:840px;top:341px;width:999px;height:452px;">
+    <img class="asset mock reveal" src="assets/s02-capture.png"     alt="" style="left:1148px;top:668px;width:696px;height:404px;">
+    <img class="asset mock reveal" src="assets/s02-image3.png"      alt="" style="left:1221px;top:77px;width:616px;height:213px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 03 — Qu'est-ce que la cohérence ?  (40:57315)
+       ============================================================ -->
+  <section class="slide" data-title="Qu’est-ce que la cohérence ?">
+    <h2 class="title reveal" contenteditable="false" style="left:80px;top:80px;">Qu’est-ce que la cohérence ?</h2>
+
+    <div class="body reveal" contenteditable="false" style="left:80px;top:285px;width:966px;">
+      <p class="p">Il existe plusieurs niveaux de cohérence:</p>
+      <ul class="list">
+        <li><b>Visuelle</b> : Des éléments perçus de façon similaire facilitent l’apprentissage du produit. Polices, tailles, boutons et libellés doivent rester uniformes afin de maintenir la cohérence visuelle</li>
+        <li><b>Fonctionnelle</b> : Des éléments interactifs qui réagissent de la même manière assurent la cohérence fonctionnelle. Elle rend le produit prévisible, ce qui renforce le sentiment de confiance chez l’utilisateur.</li>
+        <li><b>Interne</b> : C’est la combinaison de la cohérence visuelle et fonctionnelle dans le design. Elle améliore la prise en main et la facilité d’usage du produit.</li>
+        <li><b>Externe</b> : Ce type de cohérence est atteint lorsqu’il y a une cohérence de design entre plusieurs produits ou systèmes. Cela permet à l’utilisateur de réutiliser ses acquis d’un produit à l’autre, réduisant ainsi les frictions et améliorant l’expérience globale.</li>
+      </ul>
+    </div>
+
+    <img class="asset reveal" src="assets/s03-image4.png" alt="" style="left:1088px;top:333px;width:769px;height:414px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 04 — Exemple : Microsoft Office  (40:57307)
+       ============================================================ -->
+  <section class="slide" data-title="Exemple de cohérence : Microsoft Office">
+    <h2 class="title reveal" contenteditable="false" style="left:80px;top:80px;">Exemple de cohérence : les outils Microsoft Office</h2>
+
+    <img class="asset reveal" src="assets/s04-image2.png" alt="" style="left:71px;top:173px;width:1777px;height:489px;">
+
+    <div class="body reveal" contenteditable="false" style="left:80px;top:724px;width:966px;">
+      <p class="p">Les multiples niveaux de cohérence dans Microsoft Office : cohérence et consistance entre les icônes des applications, les fenêtres d’accueil et les menus principaux.</p>
+      <p class="p gap"></p>
+      <p class="p">Bien que l’encart soit contextuel en fonction du produit utilisé, une même tâche (ici, la personnalisation du texte) peut être réalisée de la même manière dans toutes les applications.</p>
+    </div>
+
+    <img class="asset reveal" src="assets/s04-image9.png" alt="" style="left:1287px;top:724px;width:430px;height:280px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 05 — Pourquoi c'est important ?  (44:55040)
+       ============================================================ -->
+  <section class="slide" data-title="Pourquoi c’est important ?">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Pourquoi c’est important ?</h2>
+
+    <p class="body reveal" contenteditable="false" style="left:81px;top:193px;width:966px;">Pour être perçu comme un produit mid-market, ces cohérences sont importantes. Il y a plusieurs raisons à être plus cohérent:</p>
+
+    <div class="body reveal" contenteditable="false" style="left:81px;top:322px;width:966px;">
+      <p class="p"><b>Réduction des erreurs :</b> des filtres cohérents causeront moins de confusions pour nos utilisateurs (aujourd’hui côté reports, nous avons 2 façons de faire les filtres par exemple)</p>
+      <p class="p gap"></p>
+      <p class="p"><b>Adoption et engagement : </b>les utilisateurs comprennent plus vite comment utiliser les fonctionnalités, une expérience prévisible réduit les frustrations.</p>
+      <p class="p gap"></p>
+      <p class="p"><b>Productivité interne :</b> les équipes design &amp; dev passeront moins de temps à se poser des questions et à réinventer la roue. Si nous standardisons certaines fonctionnalités, on accèlere le dévelopemment et la maintenance.</p>
+      <p class="p gap"></p>
+      <p class="p"><b>Image de marque et crédibilite:</b> un produit cohérent paraît directement plus fiable et professionnel.</p>
+    </div>
+
+    <img class="asset reveal" src="assets/s05-image6.png" alt="" style="left:1253px;top:306px;width:415px;height:469px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 06 — Actuellement en prod (1/2)  (46:61249)
+       ============================================================ -->
+  <section class="slide" data-title="Actuellement en prod">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Actuellement en prod</h2>
+
+    <img class="asset mock reveal" src="assets/s02-facebook.png"    alt="" style="left:93px;top:156px;width:1096px;height:370px;">
+    <img class="asset mock reveal" src="assets/s02-ig-audience.png" alt="" style="left:92px;top:559px;width:999px;height:452px;">
+    <img class="asset mock reveal" src="assets/s06-capture.png"     alt="" style="left:1133px;top:563px;width:696px;height:404px;">
+    <img class="asset mock reveal" src="assets/s06-image7.png"      alt="" style="left:1373px;top:180px;width:332px;height:272px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 07 — Actuellement en prod (2/2)  (46:63081)
+       ============================================================ -->
+  <section class="slide" data-title="Actuellement en prod">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Actuellement en prod</h2>
+
+    <img class="asset mock reveal" src="assets/s07-draft.png"     alt="" style="left:564px;top:55px;width:1280px;height:720px;">
+    <img class="asset mock reveal" src="assets/s07-search.png"    alt="" style="left:72px;top:272px;width:1280px;height:492px;">
+    <img class="asset mock reveal" src="assets/s07-campaigns.png" alt="" style="left:384px;top:632px;width:1435px;height:390px;">
+    <img class="asset reveal"      src="assets/s07-image8.png"    alt="" style="left:125px;top:773px;width:258px;height:225px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 08 — Proposition d'unification  (50:67612)
+       ============================================================ -->
+  <section class="slide" data-title="Proposition d’unification">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Proposition d’unification</h2>
+
+    <div class="body reveal" contenteditable="false" style="left:81px;top:209px;width:706px;">
+      <p class="p">La structure est la même pour tous les fonctionnalités de filtres.</p>
+      <p class="p gap"></p>
+      <p class="p">Nous avons de deux systèmes : filtres dynamiques et filtres avec un bouton pour appliquer ces filtres (pour les soucis de performance back-end). Chaque designer décide en accord avec l’équipe tech de son équipe ce qui est possible ou pas.</p>
+      <p class="p gap"></p>
+      <p class="p">Il y a des besoins spécifiques comme la création de preset (inbox, peut être reports un jour). Ce n’est pas un soucis, tant que nous sommes cohérents sur la façon d’utiliser les filtres à travers les fonctionnalités.</p>
+      <p class="p gap"></p>
+      <p class="p">Cette version de la gestion des filtres nous donne beaucoup plus de flexibilité et de liberté pour enrichir les fonctionnalités de filtrage à l’avenir.</p>
+    </div>
+
+    <img class="asset mock reveal" src="assets/s08-frame1.png" alt="" style="left:944px;top:308px;width:423px;height:400px;">
+    <img class="asset mock reveal" src="assets/s08-frame2.png" alt="" style="left:1395px;top:202px;width:450px;height:660px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 09 — Unification : Inbox  (46:67255)
+       ============================================================ -->
+  <section class="slide" data-title="Proposition d’unification : Inbox">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Proposition d’unification : Inbox</h2>
+    <img class="asset mock reveal" src="assets/s09-inbox.png" alt="" style="left:310px;top:194px;width:1280px;height:794px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 — Unification : Listening  (46:70439)
+       ============================================================ -->
+  <section class="slide" data-title="Proposition d’unification : Listening">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Proposition d’unification : Listening</h2>
+    <img class="asset mock reveal" src="assets/s10-listening.png" alt="" style="left:320px;top:199px;width:1280px;height:794px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 11 — Unification : Reports  (46:72150)
+       ============================================================ -->
+  <section class="slide" data-title="Proposition d’unification : Reports">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Proposition d’unification : Reports</h2>
+    <img class="asset mock reveal" src="assets/s11-ig.png"        alt="" style="left:65px;top:200px;width:1280px;height:720px;">
+    <img class="asset mock reveal" src="assets/s11-campaigns.png" alt="" style="left:960px;top:135px;width:842px;height:675px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 12 — Unification : Calendar  (46:75345)
+       ============================================================ -->
+  <section class="slide" data-title="Proposition d’unification : Calendar">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Proposition d’unification : Calendar</h2>
+    <img class="asset mock reveal" src="assets/s12-image1.png" alt="" style="left:322px;top:212px;width:1275px;height:655px;">
+    <img class="asset mock reveal" src="assets/s12-frame.png"  alt="" style="left:1125px;top:244px;width:450px;height:564px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 13 — Unification : Drafts  (46:77737)
+       ============================================================ -->
+  <section class="slide" data-title="Proposition d’unification : Drafts">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Proposition d’unification : Drafts</h2>
+    <img class="asset mock reveal" src="assets/s13-draft.png" alt="" style="left:320px;top:180px;width:1280px;height:720px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 14 — Les autres cas : Backoffice  (46:78536)
+       ============================================================ -->
+  <section class="slide" data-title="Les autres cas : Backoffice">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Les autres cas : Backoffice</h2>
+
+    <img class="asset mock reveal" src="assets/s14-overview.png" alt="" style="left:938px;top:227px;width:916px;height:799px;">
+    <img class="asset mock reveal" src="assets/s14-panel.png"    alt="" style="left:81px;top:183px;width:952px;height:740px;">
+
+    <p class="body reveal" contenteditable="false" style="left:1082px;top:76px;width:711px;">Le système actuel fonctionne et n’est vu que par nos utilisateurs internes. Ce n’est pas forcément nécessaire d’unifier ici.</p>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 15 — Les autres cas : Social profiles / Ad accounts  (46:80528)
+       ============================================================ -->
+  <section class="slide" data-title="Les autres cas : Social profiles / Ad accounts">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Les autres cas : Social profiles / Ad accounts</h2>
+
+    <p class="body reveal" contenteditable="false" style="left:996px;top:84px;width:711px;">Ce n’est pas vraiment des filtres, mais plus de la navigation (permettre d’accéder rapidement à un réseau en particulier)</p>
+
+    <img class="asset mock reveal" src="assets/s15-a.png" alt="" style="left:81px;top:242px;width:866px;height:740px;">
+    <img class="asset mock reveal" src="assets/s15-b.png" alt="" style="left:960px;top:244px;width:866px;height:696px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 16 — Next steps  (50:68947)
+       ============================================================ -->
+  <section class="slide" data-title="Next steps">
+    <h2 class="title reveal" contenteditable="false" style="left:81px;top:80px;">Next steps</h2>
+
+    <div class="body reveal" contenteditable="false" style="left:81px;top:179px;width:944px;">
+      <p class="p">Côté design, nous sommes alignés sur le <b><em><u class="accent">besoin de cohérence.</u></em></b></p>
+      <p class="p gap"></p>
+      <p class="p"><b>→ Si nous sommes d’accord en tant qu’équipe produit, nous étudirons la faisabilité de cette solution.</b></p>
+      <p class="p gap"></p>
+      <p class="p">Il n’y aura <b>pas de migration</b>, chaque équipe priorise cette unification en fonction de leur temps disponible.</p>
+      <p class="p">Par contre, pour tout nouveau ajout de fonctionnalité de filtres, nous conseillons (<b><em>obligeons</em></b>) d’utiliser ce nouveau format.</p>
+      <p class="p gap"></p>
+      <p class="p">Une estimation doit être faite d’un point de vue Design System pour créer les briques utilisées dans la dropdown de filtres.</p>
+    </div>
+
+    <img class="asset reveal" src="assets/s16-image5.png" alt="" style="left:1261px;top:306px;width:469px;height:469px;">
+  </section>
+
+  <!-- ============================================================
+       SLIDE 17 — Merci  (63:69481)
+       ============================================================ -->
+  <section class="slide slide--orange" data-title="Merci !">
+    <img class="asset blob" src="assets/s17-logo-big.svg" alt="" style="left:0;top:786px;width:976px;height:294px;">
+
+    <p class="body reveal" contenteditable="false"
+       style="left:360px;top:428px;font-size:35px;line-height:50px;color:var(--ref-color-white);opacity:.69;white-space:nowrap;">Filters consistancy</p>
+
+    <p class="body reveal" contenteditable="false"
+       style="left:360px;top:494px;font-size:50px;font-weight:700;line-height:1.36;color:var(--ref-color-white);white-space:nowrap;">Merci ! Des questions ?</p>
+
+    <img class="asset blob" src="assets/s17-logo-top.svg" alt="" style="left:796px;top:0;width:1124px;height:252px;">
+  </section>
+
+</div>
+</div>
+
+<!-- =============================================================
+     DECK CHROME
+     ============================================================= -->
+<nav class="chrome">
+  <span class="bar"><span id="progress"></span></span>
+  <span class="count"><b id="cur">1</b> / <span id="tot">17</span></span>
+</nav>
+
+<button class="editbtn" id="editbtn" title="Édition en ligne (E)" aria-label="Basculer le mode édition"></button>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===========================================================
+   STAGE SCALING
+   One uniform scale so the 1920x1080 canvas always stays 16:9.
+   =========================================================== */
+const stage = document.getElementById('stage');
+function fitStage(){
+  const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  stage.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fitStage);
+window.addEventListener('orientationchange', fitStage);
+fitStage();
+
+/* ===========================================================
+   NAVIGATION
+   =========================================================== */
+const slides   = Array.from(document.querySelectorAll('.slide'));
+const progress = document.getElementById('progress');
+const curEl    = document.getElementById('cur');
+document.getElementById('tot').textContent = slides.length;
+
+let index = 0;
+
+function show(next){
+  index = Math.max(0, Math.min(slides.length - 1, next));
+  slides.forEach((s, i) => s.classList.toggle('active', i === index));
+  curEl.textContent = index + 1;
+  progress.style.transform = 'scaleX(' + ((index + 1) / slides.length) + ')';
+  if (location.hash !== '#' + (index + 1)) history.replaceState(null, '', '#' + (index + 1));
+}
+const next = () => show(index + 1);
+const prev = () => show(index - 1);
+
+document.addEventListener('keydown', e => {
+  if (document.body.classList.contains('editing')) {
+    // Ctrl/Cmd+S saves a copy of the edited deck
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's'){ e.preventDefault(); saveDeck(); return; }
+    if (e.key === 'Escape'){ toggleEdit(false); return; }
+    if (e.target.isContentEditable) return;
+  }
+  switch(e.key){
+    case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': e.preventDefault(); next(); break;
+    case 'ArrowLeft':  case 'ArrowUp':   case 'PageUp':             e.preventDefault(); prev(); break;
+    case 'Home': e.preventDefault(); show(0); break;
+    case 'End':  e.preventDefault(); show(slides.length - 1); break;
+    case 'f': case 'F': if(!e.metaKey && !e.ctrlKey){ document.documentElement.requestFullscreen?.(); } break;
+    case 'e': case 'E': if(!e.metaKey && !e.ctrlKey){ toggleEdit(); } break;
+  }
+});
+
+/* Click / tap : right half advances, left half goes back */
+document.querySelector('.deck-viewport').addEventListener('click', e => {
+  if (document.body.classList.contains('editing')) return;
+  (e.clientX > window.innerWidth / 2 ? next : prev)();
+});
+
+/* Swipe */
+let tx = 0, ty = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) (dx < 0 ? next : prev)();
+}, {passive:true});
+
+/* Deep link support (#3) */
+const fromHash = parseInt(location.hash.replace('#',''), 10);
+show(Number.isFinite(fromHash) && fromHash > 0 ? fromHash - 1 : 0);
+
+/* ===========================================================
+   INLINE TEXT EDITING
+   Press E (or the pencil in the top-left corner) to edit any
+   text directly in the browser, Ctrl/Cmd+S to download a copy.
+   =========================================================== */
+const editables = Array.from(document.querySelectorAll('[contenteditable]'));
+const toast = document.getElementById('toast');
+
+function flash(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(flash._t);
+  flash._t = setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function toggleEdit(force){
+  const on = force !== undefined ? force : !document.body.classList.contains('editing');
+  document.body.classList.toggle('editing', on);
+  editables.forEach(el => el.setAttribute('contenteditable', on ? 'true' : 'false'));
+  flash(on ? 'Mode édition — Ctrl/Cmd+S pour enregistrer' : 'Mode édition désactivé');
+}
+document.getElementById('editbtn').addEventListener('click', () => toggleEdit());
+
+function saveDeck(){
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.setAttribute('contenteditable','false'));
+  clone.querySelector('body')?.classList.remove('editing');
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+  a.download = 'filters-consistency.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  flash('Deck enregistré');
+}
+</script>
+</body>
+</html>

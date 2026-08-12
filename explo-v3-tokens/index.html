@@ -433,6 +433,7 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .cover h1 .mark{display:inline-block;background:var(--accent);color:var(--on-accent);padding:0 22px 12px;
   animation:reveal .85s cubic-bezier(.72,0,.16,1) .45s backwards}
 @keyframes reveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.cover h1 .mark.lead{margin-left:-22px}
 .cover .sub{font-family:var(--sans);font-weight:700;font-size:40px;line-height:1.2;margin-top:44px;max-width:1300px}
 .cover .desc{font-family:var(--sans);font-weight:400;font-size:25px;line-height:1.5;color:var(--text-secondary);max-width:1320px;margin-top:16px}
 .cover .tiers{position:absolute;left:110px;right:110px;bottom:104px;margin-top:0}
@@ -610,7 +611,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec">Design Tokens V3</span></div>
   <div class="wrap">
     <div class="kicker">Design Tokens V3 · Refonte 2026</div>
-    <h1>Construire de l'UI<br>sans <span class="mark">deviner</span></h1>
+    <h1><span class="mark lead">Construire</span> de l'UI<br>sans deviner</h1>
     <p class="sub">Des règles écrites pour les couleurs, la lisibilité et les composants</p>
     <p class="desc">Pourquoi on a ouvert ce chantier, ce qui change concrètement, et comment on le déploie.</p>
   </div>

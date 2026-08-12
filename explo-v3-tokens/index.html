@@ -153,6 +153,10 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
    ========================================================================== */
 .st{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:auto 0}
 .st.three{grid-template-columns:repeat(3,1fr)}
+.st.solo{grid-template-columns:1fr}
+.st.solo .r{font-size:72px;letter-spacing:-.04em}
+.st.solo .k{font-size:26px;max-width:1180px;margin-top:26px}
+.st.solo .st-card{padding:52px 56px 56px}
 .st.three .r{font-family:var(--disp);font-weight:800;font-size:34px;letter-spacing:-.028em}
 .st-card{border:3px solid var(--border-strong);padding:36px 40px 40px}
 .st-card .r{font-family:var(--mono);font-weight:700;font-size:50px;line-height:1;letter-spacing:-.03em}
@@ -887,7 +891,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
       <div class="panel after">
         <header><span>Après</span><span class="tag">7 familles + gris · de la plus claire à la plus foncée</span></header>
         <div class="aa-body" id="aaNew"></div>
-        <p class="aa-sum">Le niveau <b>700</b> est lisible dans les <b>7 familles</b> (gris : 800). Deux nuances utilisables au lieu d'une.</p>
+        <p class="aa-sum">Deux nuances passent le seuil dans les <b>7 familles</b> — le 700 et le <b>800</b>, contre une seule avant. La règle retenue pour le texte est le <b>800</b>.</p>
       </div>
     </div>
   </div>
@@ -901,15 +905,11 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>III</b> · La nouvelle palette ref</span></div>
   <div class="canvas">
     <div class="kicker">Ce que ça change</div>
-    <h2>Deux règles à retenir,<br>au lieu d'un <span class="hi">test à la main</span></h2>
-    <div class="st">
+    <h2>Une règle à retenir,<br>au lieu d'un <span class="hi">test à la main</span></h2>
+    <div class="st solo">
       <div class="st-card on">
-        <div class="r">texte AA = 700</div>
-        <div class="k">Pour du texte, on prend le niveau 700. Il est lisible sur blanc comme sur le fond clair de sa propre famille, dans les sept familles.</div>
-      </div>
-      <div class="st-card">
-        <div class="r">bordure 3:1 = 600</div>
-        <div class="k">Une bordure n'a pas besoin d'autant de contraste qu'un texte. D'où deux noms différents plutôt qu'un seul, avec deux nuances différentes.</div>
+        <div class="r">texte = niveau 800</div>
+        <div class="k">Pour tout texte, on prend au minimum le niveau 800. Sur blanc, les sept familles franchissent non seulement le seuil AA (4,5:1) mais aussi le seuil AAA (7:1). Sur le fond clair de leur propre famille, elles restent largement au-dessus de AA.</div>
       </div>
     </div>
   </div>

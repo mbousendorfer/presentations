@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Montrer, pas décrire — Agorapulse</title>
+<meta name="description" content="Atelier — produire de l'UI Agorapulse avec Claude et le skill /design-guidelines.">
+
+<!-- ==========================================================================
+     TYPOGRAPHIE
+     Averta Std — la police de marque — pour tout le texte de lecture.
+     Azeret Mono pour l'appareil technique : commandes, chemins, tokens, cotes.
+     Les .woff2 sont ceux du repo (assets/fonts), partagés par toutes les pages.
+     ========================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+@font-face{font-family:'Averta Std';src:url('../assets/fonts/AvertaStd-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('../assets/fonts/AvertaStd-Semibold.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('../assets/fonts/AvertaStd-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('../assets/fonts/AvertaStd-Extrabold.woff2') format('woff2');font-weight:800;font-display:swap}
+@font-face{font-family:'Averta Std';src:url('../assets/fonts/AvertaStd-Black.woff2') format('woff2');font-weight:900;font-display:swap}
+
+/* ==========================================================================
+   === TOKENS DU DECK =======================================================
+   Le deck parle du design system : il est lui-même bâti sur des rôles, pas
+   sur des valeurs posées à la main.
+   ========================================================================== */
+:root{
+  /* ref — les primitives */
+  --white:#FFFFFF;
+  --ink-1000:#101827; --ink-800:#2A3away; --ink-600:#5E6E86; --ink-400:#8D9AAB;
+  --ink-200:#DFE3E8; --ink-100:#EDEFF2; --ink-050:#F9F9FA;
+  --orange:#FF6726; --orange-soft:#FFF5F2; --orange-deep:#B03F06;
+  --blue:#178DFE;  --blue-soft:#F3F8FF;  --blue-deep:#086DC9;
+  --green:#11B43A; --green-soft:#F3FAF3; --green-deep:#097F26;
+  --red:#FD4F42;   --red-soft:#FFF5F4;   --red-deep:#C50B0C;
+  --purple:#6554C0; --purple-soft:#F7F7FF; --purple-deep:#51419F;
+  --yellow:#C18A0E; --yellow-soft:#FCF7EF;
+  --menthol:#11ABA6;
+
+  /* sys — les rôles */
+  --surface:var(--white);
+  --surface-sunken:var(--ink-050);
+  --surface-raised:#FFFFFF;
+  --text-default:var(--ink-1000);
+  --text-secondary:var(--ink-600);
+  --text-tertiary:var(--ink-400);
+  --border-strong:var(--ink-1000);
+  --border-subtle:rgba(16,24,39,.14);
+  --border-hairline:rgba(16,24,39,.07);
+  --accent:var(--orange);
+  --on-accent:#FFFFFF;
+  --invert-bg:var(--ink-1000);
+  --invert-fg:#FFFFFF;
+  --invert-fg-soft:rgba(255,255,255,.68);
+
+  /* typographie */
+  --disp:'Averta Std',system-ui,sans-serif;
+  --sans:'Averta Std',system-ui,sans-serif;
+  --mono:'Azeret Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#0B1220}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ==========================================================================
+   === SCÈNE 16:9 FIXE (1920×1080) =========================================
+   Le contenu n'est jamais reflowé : la scène entière est mise à l'échelle.
+   ========================================================================== */
+.viewport{position:fixed;inset:0;overflow:hidden;background:#0B1220}
+.stage{
+  position:absolute;left:50%;top:50%;
+  width:1920px;height:1080px;
+  transform-origin:center center;transform:translate(-50%,-50%) scale(1);
+  background:var(--surface);overflow:hidden;color:var(--text-default);
+  box-shadow:0 40px 120px rgba(0,0,0,.5);
+}
+.slide{position:absolute;inset:0;visibility:hidden;opacity:0;pointer-events:none;
+  transition:opacity .38s ease}
+.slide.active{visibility:visible;opacity:1;pointer-events:auto}
+
+/* ==========================================================================
+   === CHROME COMMUN : grille, topbar, folio ===============================
+   ========================================================================== */
+.cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);padding:0 110px;pointer-events:none}
+.cols span{border-left:1px solid var(--border-hairline)}
+.cols span:last-child{border-right:1px solid var(--border-hairline)}
+
+.topbar{position:absolute;left:110px;right:110px;top:70px;display:flex;justify-content:space-between;align-items:flex-end;
+  padding-bottom:20px;border-bottom:3px solid var(--border-strong);
+  font:500 15px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.topbar .sec{color:var(--text-secondary)}
+.topbar .sec b{color:var(--accent);font-weight:700}
+
+.folio{position:absolute;right:110px;bottom:44px;font:500 14px/1 var(--mono);letter-spacing:.2em;color:var(--text-tertiary)}
+.progress{position:absolute;left:110px;bottom:50px;width:340px;height:3px;background:var(--ink-200)}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .38s cubic-bezier(.2,.7,.2,1)}
+
+/* zone de contenu — bornée, donc jamais de débordement */
+.canvas{position:absolute;left:110px;right:110px;top:176px;bottom:96px;display:flex;flex-direction:column;min-height:0}
+
+/* ==========================================================================
+   === TYPOGRAPHIE DE SLIDE ================================================
+   ========================================================================== */
+.kicker{font:700 15px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+h2{font-family:var(--disp);font-weight:900;font-size:66px;line-height:1.02;letter-spacing:-.038em;margin-top:16px}
+h2.sm{font-size:54px}
+h2 .hi{background:var(--accent);color:var(--on-accent);padding:0 6px 4px 12px;display:inline-block}
+.lede{font-family:var(--sans);font-weight:500;font-size:26px;line-height:1.42;color:var(--text-secondary);max-width:1440px;margin-top:18px}
+.lede b{color:var(--text-default);font-weight:700}
+
+code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(--ink-050);
+  border:1px solid var(--border-subtle);padding:2px 7px;white-space:nowrap}
+.tk.accent{background:var(--orange-soft);border-color:rgba(255,103,38,.35);color:var(--orange-deep)}
+.tk.blue{background:var(--blue-soft);border-color:rgba(23,141,254,.32);color:var(--blue-deep)}
+.tk.green{background:var(--green-soft);border-color:rgba(17,180,58,.3);color:var(--green-deep)}
+.tk.red{background:var(--red-soft);border-color:rgba(253,79,66,.32);color:var(--red-deep)}
+/* variante sur fond sombre : sinon la puce devient un bloc blanc illisible */
+.slide.divider .tk,.lab .tk,.panel.dark .tk{
+  background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28);color:#fff}
+
+/* ==========================================================================
+   === SLIDE DE SECTION ====================================================
+   ========================================================================== */
+.slide.divider{background:var(--invert-bg);color:var(--invert-fg)}
+.slide.divider .topbar{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}
+.slide.divider .topbar .sec{color:rgba(255,255,255,.45)}
+.slide.divider .folio{color:rgba(255,255,255,.4)}
+.slide.divider .progress{background:rgba(255,255,255,.18)}
+.slide.divider .cols span{border-color:rgba(255,255,255,.06)}
+.divider .canvas{justify-content:center}
+.divider .num{font:700 15px/1 var(--mono);letter-spacing:.24em;color:var(--accent)}
+.divider h2{font-size:132px;line-height:.92;letter-spacing:-.05em;margin-top:26px;text-transform:uppercase}
+.divider .lede{color:var(--invert-fg-soft);font-size:30px;max-width:1180px;margin-top:34px}
+.divider .lede b{color:#fff}
+.divider .meta{margin-top:46px;display:flex;gap:56px;border-top:1px solid rgba(255,255,255,.22);padding-top:26px}
+.divider .meta div{font:500 15px/1.5 var(--mono);color:rgba(255,255,255,.6);letter-spacing:.04em}
+.divider .meta b{display:block;color:var(--accent);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:13px;margin-bottom:8px}
+
+/* ==========================================================================
+   === COMPOSANT : liste de constats numérotés =============================
+   ========================================================================== */
+.claims{display:grid;grid-template-columns:1fr 1fr;border-top:3px solid var(--border-strong);margin-top:auto}
+.claims.fill{flex:1;min-height:0;margin-top:26px;align-content:stretch}
+.claims.one{grid-template-columns:1fr}
+.claim{display:grid;grid-template-columns:46px 1fr;gap:18px;padding:22px 0;border-bottom:1px solid var(--border-subtle);align-items:start}
+.claims:not(.one) .claim:nth-child(odd){border-right:1px solid var(--border-subtle);padding-right:46px}
+.claims:not(.one) .claim:nth-child(even){padding-left:46px}
+.claim .n{font:700 13px/1 var(--mono);letter-spacing:.1em;color:var(--text-tertiary);white-space:nowrap;padding-top:11px}
+.cb h3{font-family:var(--disp);font-weight:800;font-size:34px;line-height:1.1;letter-spacing:-.028em}
+.cb p{font-family:var(--sans);font-weight:500;font-size:19px;line-height:1.5;color:var(--text-secondary);margin-top:12px}
+.cb p b{color:var(--text-default);font-weight:700}
+
+/* ==========================================================================
+   === COMPOSANT : panneau bordé ===========================================
+   ========================================================================== */
+.panels{display:grid;gap:26px;margin-top:30px;flex:1;min-height:0}
+.panels.two{grid-template-columns:1fr 1fr}
+.panels.three{grid-template-columns:repeat(3,1fr)}
+.panel{border:2px solid var(--border-strong);display:flex;flex-direction:column;background:var(--surface-raised);min-height:0}
+.panel>header{padding:16px 24px;border-bottom:2px solid var(--border-strong);display:flex;justify-content:space-between;align-items:center;
+  font:700 14px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.panel>header .tag{font-weight:500;letter-spacing:.06em;text-transform:none;opacity:.82;font-size:13px}
+.panel .body{padding:24px;flex:1;min-height:0;display:flex;flex-direction:column;gap:14px}
+.panel .body p{font-family:var(--sans);font-weight:500;font-size:19px;line-height:1.5;color:var(--text-secondary)}
+.panel .body p b{color:var(--text-default);font-weight:700}
+.panel.bad{border-color:var(--red)}
+.panel.bad>header{border-bottom-color:var(--red);background:var(--red-soft);color:var(--red-deep)}
+.panel.good{border-color:var(--green)}
+.panel.good>header{border-bottom-color:var(--green);background:var(--green-soft);color:var(--green-deep)}
+.panel.dark{border-color:var(--invert-bg);background:var(--invert-bg);color:var(--invert-fg)}
+.panel.dark>header{border-bottom-color:rgba(255,255,255,.24);color:var(--accent)}
+.panel.dark .body p{color:var(--invert-fg-soft)}
+.panel.dark .body p b{color:#fff}
+.panel.accent{border-color:var(--accent)}
+.panel.accent>header{border-bottom-color:var(--accent);background:var(--orange-soft);color:var(--orange-deep)}
+
+/* liste à puces carrées dans un panneau */
+.ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.ul li{position:relative;padding-left:26px;font-family:var(--sans);font-weight:500;font-size:19px;line-height:1.45;color:var(--text-secondary)}
+.ul li::before{content:'';position:absolute;left:0;top:9px;width:9px;height:9px;background:var(--accent)}
+.ul li b{color:var(--text-default);font-weight:700}
+.panel.dark .ul li{color:var(--invert-fg-soft)}
+.panel.dark .ul li b{color:#fff}
+.ul.tight li{font-size:17px;gap:9px}
+.ul.no li::before{background:var(--red)}
+.ul.yes li::before{background:var(--green)}
+
+/* ==========================================================================
+   === COMPOSANT : bloc de prompt à copier =================================
+   La matière première de l'atelier : ce qu'on tape vraiment.
+   ========================================================================== */
+.prompt{background:var(--invert-bg);color:#E9EEF6;border-left:8px solid var(--accent);
+  padding:26px 30px;font:400 19px/1.62 var(--mono);white-space:pre-wrap;overflow:hidden}
+.prompt .c{color:#7C8CA5}                 /* commentaire */
+.prompt .k{color:var(--accent);font-weight:700}   /* commande, skill */
+.prompt .v{color:#7FD69B}                 /* valeur, chemin */
+.prompt.sm{font-size:16px;line-height:1.6;padding:20px 24px}
+.prompt.xs{font-size:14.5px;line-height:1.6;padding:18px 22px}
+
+/* ==========================================================================
+   === COMPOSANT : les trois tiers de tokens ===============================
+   ========================================================================== */
+.tiers{display:flex;flex-direction:column;border-top:3px solid var(--border-strong);margin-top:28px}
+.tier{display:grid;grid-template-columns:120px 300px 1fr 420px;gap:26px;align-items:center;
+  padding:24px 0;border-bottom:1px solid var(--border-subtle)}
+.tier .rank{font:900 44px/1 var(--disp);color:var(--ink-200);letter-spacing:-.04em}
+.tier.on .rank{color:var(--accent)}
+.tier .name{font-family:var(--mono);font-weight:700;font-size:24px;letter-spacing:-.01em}
+.tier .what{font-family:var(--sans);font-weight:600;font-size:21px;line-height:1.35}
+.tier .ex{font-family:var(--mono);font-weight:400;font-size:15px;line-height:1.55;color:var(--text-secondary)}
+
+/* ==========================================================================
+   === COMPOSANT : tableau ==================================================
+   ========================================================================== */
+.tbl{width:100%;border-collapse:collapse;margin-top:26px;font-family:var(--sans)}
+.tbl th{text-align:left;font:700 13px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--text-secondary);
+  padding:0 20px 14px 0;border-bottom:3px solid var(--border-strong)}
+.tbl td{padding:16px 20px 16px 0;border-bottom:1px solid var(--border-subtle);font-weight:500;font-size:19.5px;line-height:1.36;color:var(--text-secondary);vertical-align:top}
+.tbl td b{color:var(--text-default);font-weight:700}
+.tbl td.k{font-family:var(--mono);font-size:16.5px;font-weight:500;color:var(--text-default);white-space:nowrap}
+/* variante « fill » : le tableau occupe la hauteur libre et les lignes se
+   répartissent l'espace, au lieu de laisser un tiers de slide vide */
+.tbl.fill{flex:1;min-height:0;height:100%}
+.tbl .dot{display:inline-block;width:13px;height:13px;margin-right:10px;vertical-align:-1px;border-radius:50%}
+.tbl tr:last-child td{border-bottom:0}
+
+/* ==========================================================================
+   === COMPOSANT : étapes numérotées en colonne ============================
+   ========================================================================== */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:3px solid var(--border-strong);margin-top:30px;flex:1;min-height:0}
+.steps.three{grid-template-columns:repeat(3,1fr)}
+.step{padding:26px 34px 26px 0;border-right:1px solid var(--border-subtle);display:flex;flex-direction:column}
+.step:last-child{border-right:0}
+.step:not(:first-child){padding-left:34px}
+.step .n{font:700 13px/1 var(--mono);letter-spacing:.18em;color:var(--accent)}
+.step .t{font-family:var(--disp);font-weight:800;font-size:29px;line-height:1.12;letter-spacing:-.026em;margin-top:14px}
+.step .d{font-family:var(--sans);font-weight:500;font-size:18px;line-height:1.48;color:var(--text-secondary);margin-top:12px}
+.step .flag{margin-top:auto;padding-top:18px;font:500 14px/1.5 var(--mono);color:var(--text-tertiary)}
+
+/* ==========================================================================
+   === COMPOSANT : la carte de lab =========================================
+   ========================================================================== */
+.lab{background:var(--invert-bg);color:var(--invert-fg);flex:1;min-height:0;margin-top:28px;
+  display:grid;grid-template-columns:1fr 1fr;gap:0}
+.lab .left{padding:38px 44px;border-right:1px solid rgba(255,255,255,.18);display:flex;flex-direction:column}
+.lab .right{padding:38px 44px;display:flex;flex-direction:column}
+.lab .lbl{font:700 13px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+.lab h3{font-family:var(--disp);font-weight:900;font-size:52px;line-height:1;letter-spacing:-.04em;margin-top:16px}
+.lab p{font-family:var(--sans);font-weight:500;font-size:20px;line-height:1.5;color:var(--invert-fg-soft);margin-top:20px}
+.lab p b{color:#fff;font-weight:700}
+.lab .ul li{color:var(--invert-fg-soft);font-size:18.5px}
+.lab .ul li b{color:#fff}
+.lab .clock{margin-top:auto;padding-top:24px;border-top:1px solid rgba(255,255,255,.2);
+  font:700 15px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.lab .clock span{color:rgba(255,255,255,.5);font-weight:500;margin-left:14px;letter-spacing:.06em;text-transform:none}
+
+/* ==========================================================================
+   === COMPOSANT : checklist ===============================================
+   ========================================================================== */
+/* les lignes se répartissent la hauteur libre : sinon la liste se tasse en
+   haut et laisse une bande morte au-dessus de la chute */
+.chk{display:grid;grid-template-columns:1fr 1fr;gap:0 60px;margin-top:28px;border-top:3px solid var(--border-strong);flex:1;min-height:0;align-content:stretch}
+.chk .it{display:grid;grid-template-columns:40px 1fr;gap:16px;padding:22px 0;border-bottom:1px solid var(--border-subtle);align-items:start}
+.chk .box{width:26px;height:26px;border:2px solid var(--border-strong);margin-top:4px;position:relative}
+.chk .box::after{content:'';position:absolute;left:6px;top:2px;width:9px;height:15px;
+  border:solid var(--accent);border-width:0 3px 3px 0;transform:rotate(42deg)}
+.chk .t{font-family:var(--disp);font-weight:800;font-size:24px;line-height:1.16;letter-spacing:-.02em}
+.chk .d{font-family:var(--mono);font-weight:400;font-size:15.5px;line-height:1.55;color:var(--text-secondary);margin-top:9px}
+
+/* ==========================================================================
+   === COMPOSANT : bandeau de règle ========================================
+   ========================================================================== */
+.rule-strip{display:flex;align-items:center;gap:26px;background:var(--surface-sunken);
+  border-left:8px solid var(--accent);padding:24px 30px;margin-top:26px}
+.rule-strip .lbl{font:700 13px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);flex:none}
+.rule-strip span{font-family:var(--sans);font-weight:600;font-size:23px;line-height:1.38}
+.rule-strip.red{border-left-color:var(--red);background:var(--red-soft)}
+.rule-strip.red .lbl{color:var(--red-deep)}
+
+/* la chute : un bloc inversé qui ferme la slide */
+.exit{margin-top:auto;background:var(--invert-bg);color:#fff;padding:26px 32px;display:flex;align-items:center;gap:26px}
+.exit .lbl{font:700 13px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--accent);flex:none}
+.exit span{font-family:var(--sans);font-weight:600;font-size:23px;line-height:1.4}
+
+/* ==========================================================================
+   === COMPOSANT : sommaire ================================================
+   ========================================================================== */
+.toc{display:flex;flex-direction:column;border-top:3px solid var(--border-strong);margin-top:30px;flex:1;min-height:0}
+.toc a{display:grid;grid-template-columns:110px 1fr 300px;gap:30px;align-items:baseline;
+  padding:24px 0;border-bottom:1px solid var(--border-subtle);text-decoration:none;color:inherit;cursor:pointer;
+  transition:padding-left .18s ease}
+.toc a:hover{padding-left:14px}
+.toc a .n{font:700 14px/1 var(--mono);letter-spacing:.16em;color:var(--text-tertiary)}
+.toc a .t{font-family:var(--disp);font-weight:800;font-size:38px;line-height:1.06;letter-spacing:-.03em}
+.toc a:hover .t{color:var(--accent)}
+.toc a .d{font-family:var(--mono);font-weight:400;font-size:15px;line-height:1.5;color:var(--text-secondary)}
+
+/* ==========================================================================
+   === COUVERTURE ==========================================================
+   ========================================================================== */
+.cover{position:absolute;left:110px;right:110px;top:200px;bottom:96px;display:flex;flex-direction:column}
+.cover h1{font-family:var(--disp);font-weight:900;font-size:168px;line-height:.86;letter-spacing:-.05em;
+  text-transform:uppercase;margin-top:30px;max-width:1400px}
+.cover h1 .hi{background:var(--accent);color:var(--on-accent);padding:0 6px 10px 16px;display:inline-block}
+.cover .sub{font-family:var(--disp);font-weight:700;font-size:34px;line-height:1.3;margin-top:44px;max-width:1120px}
+.cover .desc{font-family:var(--disp);font-weight:500;font-size:24px;line-height:1.5;color:var(--text-secondary);margin-top:18px;max-width:1000px}
+.modules{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);border-top:3px solid var(--border-strong)}
+.mod{padding:26px 40px 6px 0;border-right:1px solid var(--border-subtle)}
+.mod:last-child{border-right:0;padding-right:0}
+.mod .n{font:700 13px/1 var(--mono);letter-spacing:.16em;color:var(--text-tertiary)}
+.mod .t{font-family:var(--disp);font-weight:800;font-size:27px;line-height:1.12;letter-spacing:-.02em;margin-top:12px}
+.mod .d{font:500 15px/1.45 var(--mono);color:var(--text-secondary);margin-top:10px}
+
+/* ==========================================================================
+   === MOTION : révélation en cascade à l'entrée de chaque slide ===========
+   ========================================================================== */
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.slide.active .topbar,.slide.active .kicker,.slide.active h2,.slide.active .lede,
+.slide.active .num,.slide.active .meta,
+.slide.active .claim,.slide.active .panel,.slide.active .tier,.slide.active .step,
+.slide.active .prompt,.slide.active .rule-strip,.slide.active .exit,.slide.active .lab,
+.slide.active .tbl,.slide.active .chk .it,.slide.active .toc a,
+.slide.active .cover h1,.slide.active .cover .sub,.slide.active .cover .desc,.slide.active .mod{
+  animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+.slide.active .topbar{animation-delay:.02s}
+.slide.active .kicker,.slide.active .num{animation-delay:.08s}
+.slide.active h2{animation-delay:.14s}
+.slide.active .lede{animation-delay:.22s}
+.slide.active .cover h1{animation-delay:.16s}
+.slide.active .cover .sub{animation-delay:.44s}
+.slide.active .cover .desc{animation-delay:.52s}
+.slide.active .tbl,.slide.active .meta{animation-delay:.3s}
+.slide.active .claim:nth-child(1),.slide.active .panel:nth-child(1),.slide.active .tier:nth-child(1),
+.slide.active .step:nth-child(1),.slide.active .toc a:nth-child(1),.slide.active .chk .it:nth-child(1),
+.slide.active .mod:nth-child(1){animation-delay:.3s}
+.slide.active .claim:nth-child(2),.slide.active .panel:nth-child(2),.slide.active .tier:nth-child(2),
+.slide.active .step:nth-child(2),.slide.active .toc a:nth-child(2),.slide.active .chk .it:nth-child(2),
+.slide.active .mod:nth-child(2){animation-delay:.36s}
+.slide.active .claim:nth-child(3),.slide.active .panel:nth-child(3),.slide.active .tier:nth-child(3),
+.slide.active .step:nth-child(3),.slide.active .toc a:nth-child(3),.slide.active .chk .it:nth-child(3),
+.slide.active .mod:nth-child(3){animation-delay:.42s}
+.slide.active .claim:nth-child(4),.slide.active .step:nth-child(4),.slide.active .toc a:nth-child(4),
+.slide.active .chk .it:nth-child(4){animation-delay:.48s}
+.slide.active .claim:nth-child(5),.slide.active .toc a:nth-child(5),.slide.active .chk .it:nth-child(5){animation-delay:.54s}
+.slide.active .claim:nth-child(6),.slide.active .toc a:nth-child(6),.slide.active .chk .it:nth-child(6){animation-delay:.6s}
+.slide.active .claim:nth-child(n+7),.slide.active .toc a:nth-child(n+7),.slide.active .chk .it:nth-child(n+7){animation-delay:.66s}
+.slide.active .prompt{animation-delay:.34s}
+.slide.active .lab{animation-delay:.3s}
+.slide.active .rule-strip,.slide.active .exit{animation-delay:.5s}
+
+/* ==========================================================================
+   === UI HORS SCÈNE : plan, aide, barre d'édition =========================
+   ========================================================================== */
+.overview{position:fixed;inset:0;background:rgba(11,18,32,.97);z-index:60;display:none;
+  padding:60px 70px;overflow:auto}
+.overview.on{display:block}
+.overview h4{color:#fff;font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.18em;
+  text-transform:uppercase;margin-bottom:28px;opacity:.62}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(200px,20vw,260px),1fr));gap:14px}
+.ov-item{border:1px solid rgba(255,255,255,.16);padding:16px 18px;cursor:pointer;color:#fff;
+  transition:border-color .16s ease,background .16s ease}
+.ov-item:hover{border-color:var(--orange);background:rgba(255,103,38,.1)}
+.ov-item.cur{border-color:var(--orange);background:var(--orange)}
+.ov-item .n{font:500 11px/1 var(--mono);letter-spacing:.14em;opacity:.6;text-transform:uppercase}
+.ov-item .t{font-family:var(--disp);font-weight:700;font-size:clamp(14px,1.1vw,17px);line-height:1.2;margin-top:9px}
+
+.hint{position:fixed;left:18px;bottom:16px;z-index:50;color:rgba(255,255,255,.42);
+  font:500 11px/1.6 var(--mono);letter-spacing:.1em;text-transform:uppercase;pointer-events:none;
+  transition:opacity .5s ease}
+.hint.hide{opacity:0}
+
+.editbar{position:fixed;top:0;left:0;right:0;z-index:70;background:var(--orange);color:#fff;
+  padding:11px 18px;display:none;gap:16px;align-items:center;
+  font:700 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+body.editing .editbar{display:flex}
+body.editing [contenteditable]{outline:1px dashed rgba(255,103,38,.55);outline-offset:3px}
+body.editing [contenteditable]:focus{outline:2px solid var(--orange)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="editbar" id="editbar">
+  <span>Mode édition</span>
+  <span style="font-weight:500;letter-spacing:.06em;text-transform:none">Clique sur un texte pour le modifier · Ctrl/⌘+S pour télécharger le fichier modifié · E pour sortir</span>
+</div>
+
+<div class="viewport">
+<div class="stage" id="stage">
+
+<!-- === 01 — COUVERTURE ================================================== -->
+<section class="slide cover-slide active" data-title="Couverture">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Atelier · <b>2 h</b></span></div>
+  <div class="cover">
+    <div class="kicker">Claude · Design System</div>
+    <h1>Montrer,<br>pas <span class="hi">décrire</span></h1>
+    <p class="sub">Produire de l'UI Agorapulse avec Claude, sans passer par la case « je t'explique l'écran ».</p>
+    <p class="desc">Deux heures, votre ticket, votre clavier. On repart avec un écran ouvrable dans le navigateur.</p>
+    <div class="modules">
+      <div class="mod"><div class="n">01</div><div class="t">Le geste</div><div class="d">Mode plan, contexte,<br>et pourquoi ça dérive</div></div>
+      <div class="mod"><div class="n">02</div><div class="t">L'écran en HTML</div><div class="d">/design-guidelines,<br>composants et tokens</div></div>
+      <div class="mod"><div class="n">03</div><div class="t">Le passage en Figma</div><div class="d">Votre fichier,<br>les instances du DS</div></div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">01</div>
+</section>
+
+<!-- === 02 — CE QU'ON VISE ============================================== -->
+<section class="slide" data-title="Ce qu'on vise" data-sec="Cadrage">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Cadrage</span></div>
+  <div class="canvas">
+    <div class="kicker">Le contrat de l'atelier</div>
+    <h2>À 12 h 00, chacun a un écran.</h2>
+    <p class="lede">Pas une maquette parfaite. Un écran <b>fait avec les vrais composants du design system</b>, ouvrable dans un navigateur, collable dans un ticket. Assez juste pour que la conversation avec un designer ou un dev parte du bon endroit.</p>
+    <div class="panels three">
+      <div class="panel">
+        <header>Ce que vous gagnez</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Une spec qu'on <b>voit</b> au lieu de la lire</li>
+            <li>Les questions difficiles qui sortent <b>avant</b> le dev</li>
+            <li>Un aller-retour de moins avec le design</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel">
+        <header>Ce que ça ne remplace pas</header>
+        <div class="body">
+          <ul class="ul tight no">
+            <li>Le travail de <b>conception</b> d'un designer</li>
+            <li>Une <b>recherche utilisateur</b></li>
+            <li>Une <b>décision de produit</b> — l'outil n'en prend aucune</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel accent">
+        <header>La règle du jeu</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>On travaille sur <b>vos vrais tickets</b></li>
+            <li>Personne ne regarde par-dessus votre épaule</li>
+            <li>Un écran moche mais juste vaut mieux qu'un beau faux</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">02</div>
+</section>
+
+<!-- === 03 — AVANT L'ATELIER : LA CHECKLIST ============================= -->
+<section class="slide" data-title="Avant l'atelier" data-sec="Cadrage">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Cadrage · <b>à faire avant de venir</b></span></div>
+  <div class="canvas">
+    <div class="kicker">Prérequis</div>
+    <h2 class="sm">Six cases à cocher avant de s'asseoir.</h2>
+    <div class="chk">
+      <div class="it"><div class="box"></div><div><div class="t">Claude Code installé et connecté</div><div class="d">CLI, app ou extension IDE — au choix.<br>Compte Agorapulse.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Le plugin <span class="tk accent">design-guidelines</span></div><div class="d">Installé depuis la marketplace Agorapulse.<br>Vérifier : taper <span class="tk">/design-lookup button</span>.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Un accès en lecture à <span class="tk">agorapulse/design</span></div><div class="d">Le skill y lit les specs en direct.<br>Vérifier : <span class="tk">gh auth status</span>.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Le plugin Figma connecté</div><div class="d">Pour le module 3.<br>Vérifier : <span class="tk">/plugin</span> → Figma « Connected ».</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Un dossier de projet vide</div><div class="d">Un dossier à vous, par exemple<br><span class="tk">~/protos/</span>. C'est là que Claude écrira.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Un ticket Shortcut sous la main</div><div class="d">Un vrai, en cours. Idéalement un écran<br>ou un bout d'écran, pas une refonte.</div></div></div>
+    </div>
+    <div class="rule-strip red"><span class="lbl">Si une case manque</span><span>Venez quand même — on a une slide de dépannage à la fin, et un voisin.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">03</div>
+</section>
+
+<!-- === 04 — SOMMAIRE =================================================== -->
+<section class="slide" data-title="Le déroulé" data-sec="Cadrage">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Cadrage</span></div>
+  <div class="canvas">
+    <div class="kicker">Deux heures</div>
+    <h2>Le déroulé.</h2>
+    <div class="toc">
+      <a data-go="6"><span class="n">I · 25 MIN</span><span class="t">Le geste</span><span class="d">Pourquoi ça dérive, et les trois choses qui changent tout</span></a>
+      <a data-go="15"><span class="n">II · 50 MIN</span><span class="t">L'écran en HTML</span><span class="d">Le skill, les composants, les tokens — puis votre ticket</span></a>
+      <a data-go="26"><span class="n">III · 35 MIN</span><span class="t">Le passage en Figma</span><span class="d">Votre fichier, les instances publiées, les garde-fous</span></a>
+      <a data-go="33"><span class="n">IV · 10 MIN</span><span class="t">Après l'atelier</span><span class="d">Où s'arrête le PM, le mémo, le dépannage</span></a>
+    </div>
+    <div class="exit"><span class="lbl">Rappel</span><span>Les deux labs font 80 des 120 minutes. Le reste, c'est du cadrage — on ne s'y attarde pas.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">04</div>
+</section>
+
+<!-- === 05 — SECTION I ================================================== -->
+<section class="slide divider" data-title="I · Le geste" data-sec="Section I">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Section I</span></div>
+  <div class="canvas">
+    <div class="num">MODULE I · 25 MINUTES</div>
+    <h2>Le geste</h2>
+    <p class="lede">Claude sait déjà écrire de l'UI. Le problème n'est jamais là. Le problème, c'est qu'<b>il en écrit une plausible plutôt que la nôtre</b> — et qu'on ne s'en aperçoit qu'au moment où un dev la lit.</p>
+    <div class="meta">
+      <div><b>On voit</b>Pourquoi ça dérive<br>Le mode plan<br>L'anatomie d'un prompt</div>
+      <div><b>On installe</b>Le contexte projet<br>Le skill du design system</div>
+      <div><b>On ne fait pas</b>Encore de code<br>— ça vient au module II</div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">05</div>
+</section>
+
+<!-- === 06 — POURQUOI ÇA DÉRIVE ========================================= -->
+<section class="slide" data-title="Pourquoi ça dérive" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">Le diagnostic</div>
+    <h2>Sans contexte, il invente<br>une UI <span class="hi">vraisemblable</span>.</h2>
+    <p class="lede">Un modèle de langage produit ce qui ressemble le plus à ce qu'il a lu. À défaut d'Agorapulse, il produit du SaaS générique — propre, crédible, et faux. Quatre symptômes reviennent toujours.</p>
+    <div class="claims fill">
+      <div class="claim"><span class="n">01</span><div class="cb"><h3>Des valeurs en dur</h3><p><span class="tk red">#4F46E5</span>, <span class="tk red">padding: 12px</span>, <span class="tk red">border-radius: 8px</span>. Plausible partout, juste nulle part. <b>Le jour où la palette bouge, rien ne suit.</b></p></div></div>
+      <div class="claim"><span class="n">02</span><div class="cb"><h3>Des composants réinventés</h3><p>Une modale écrite à la main alors que le DS ship une <span class="tk">Modale</span>. Elle ressemble. Elle n'a ni les états, ni le focus, ni l'accessibilité.</p></div></div>
+      <div class="claim"><span class="n">03</span><div class="cb"><h3>Une grammaire étrangère</h3><p><span class="tk red">ap-button--primary</span> au lieu de <span class="tk green">ap-button primary</span>. Le double tiret vient d'ailleurs. Chez nous, <b>les modifieurs sont plats</b>.</p></div></div>
+      <div class="claim"><span class="n">04</span><div class="cb"><h3>Des couleurs hors de propos</h3><p>Du bleu pour un bouton principal, du violet pour décorer. Chez nous ces couleurs <b>veulent dire quelque chose</b> — et pas ça.</p></div></div>
+    </div>
+    <div class="exit"><span class="lbl">La cause</span><span>Ce n'est pas un défaut du modèle. C'est un défaut de contexte. Et le contexte, ça se fournit.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">06</div>
+</section>
+
+<!-- === 07 — LES TROIS LEVIERS ========================================== -->
+<section class="slide" data-title="Les trois leviers" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">Le remède</div>
+    <h2>Trois leviers, dans cet ordre.</h2>
+    <p class="lede">Ils ne se remplacent pas. Le mode plan vous protège de vous-même, le contexte projet dit où on est, le skill dit avec quoi on construit.</p>
+    <div class="steps three">
+      <div class="step">
+        <div class="n">LEVIER 01</div>
+        <div class="t">Le mode plan</div>
+        <div class="d">Claude analyse et propose <b>avant</b> d'écrire quoi que ce soit. Vous lisez le plan, vous corrigez le tir, puis vous laissez faire.</div>
+        <div class="flag">Coût : 2 minutes.<br>Économie : la moitié de la session.</div>
+      </div>
+      <div class="step">
+        <div class="n">LEVIER 02</div>
+        <div class="t">Le contexte projet</div>
+        <div class="d">Un fichier <span class="tk">CLAUDE.md</span> à la racine de votre dossier. Il dit ce qu'est le projet, pour qui, avec quelles contraintes. Lu à chaque session.</div>
+        <div class="flag">Écrit une fois.<br>Sert à toutes les sessions.</div>
+      </div>
+      <div class="step">
+        <div class="n">LEVIER 03</div>
+        <div class="t">Le skill du DS</div>
+        <div class="d"><span class="tk accent">/design-guidelines</span> va chercher les vraies specs des composants et des tokens dans le repo du design system, et impose les règles.</div>
+        <div class="flag">C'est lui qui fait<br>90 % du travail.</div>
+      </div>
+    </div>
+    <div class="rule-strip"><span class="lbl">L'ordre compte</span><span>Un bon prompt sans skill donne du beau générique. Un skill sans plan donne du juste, mais pas ce que vous vouliez.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">07</div>
+</section>
+
+<!-- === 08 — LE MODE PLAN =============================================== -->
+<section class="slide" data-title="Le mode plan" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">Levier 01</div>
+    <h2 class="sm">Le mode plan : lire avant de lancer.</h2>
+    <div class="panels two">
+      <div class="panel">
+        <header>Comment y entrer</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Dans l'IDE ou l'app : le sélecteur de mode passe de <b>« Ask before edits »</b> à <b>« Plan mode »</b></li>
+            <li>Au clavier : <span class="tk">Shift + Tab</span> fait le tour des modes</li>
+            <li>Claude analyse, propose un plan, et <b>n'écrit rien</b> tant que vous n'avez pas dit oui</li>
+          </ul>
+          <p style="margin-top:6px">Vous relisez le plan comme vous reliriez une spec : est-ce qu'il a compris le problème, ou juste la phrase ?</p>
+        </div>
+      </div>
+      <div class="panel dark">
+        <header>Ce qu'on cherche dans le plan</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Il a nommé les <b>composants du DS</b> qu'il compte utiliser</li>
+            <li>Il n'a pas prévu d'en <b>inventer</b> un qui existe déjà</li>
+            <li>Il a repéré les <b>états</b> : vide, chargement, erreur</li>
+            <li>Il pose les <b>questions</b> que vous n'aviez pas tranchées</li>
+          </ul>
+          <p style="margin-top:6px">Si le plan est vague, le résultat le sera. On corrige le plan, pas le code.</p>
+        </div>
+      </div>
+    </div>
+    <div class="exit"><span class="lbl">Le raccourci qui coûte cher</span><span>Sauter le plan, c'est passer trois fois plus de temps à rattraper l'écran après coup.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">08</div>
+</section>
+
+<!-- === 09 — ANATOMIE D'UN PROMPT ======================================= -->
+<section class="slide" data-title="Anatomie d'un prompt" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">La matière première</div>
+    <h2 class="sm">Un prompt utile a cinq parties.</h2>
+    <p class="lede">Le vôtre peut être long. Il ne doit pas être vague. « Fais-moi un écran de filtres » et le squelette ci-dessous ne produisent pas le même objet.</p>
+    <div class="panels two" style="grid-template-columns:1fr 1.25fr">
+      <div class="panel">
+        <header>Les cinq parties</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li><b>L'intention</b> — ce qu'on fabrique, en une phrase</li>
+            <li><b>Les garde-fous</b> — ce qu'il ne doit pas faire</li>
+            <li><b>Le but</b> — à quoi on saura que c'est réussi</li>
+            <li><b>Le procédé</b> — dans quel ordre travailler</li>
+            <li><b>Les contraintes</b> — le DS, la techno, le périmètre</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel accent">
+        <header>Le squelette<span class="tag">à garder sous le coude</span></header>
+        <div class="body" style="padding:0">
+          <div class="prompt xs" style="border-left:0;flex:1"><span class="c"># intention</span>
+Construis l'écran de <span class="v">[quoi]</span> pour <span class="v">[qui]</span>.
+
+<span class="c"># garde-fous</span>
+Ne code rien avant que j'aie validé le plan.
+N'invente aucun composant : si le DS en a un, prends-le.
+
+<span class="c"># but</span>
+Un designer doit pouvoir dire « oui, c'est ça » en 10 s.
+
+<span class="c"># procédé</span>
+1. Cherche les composants du DS par intention
+2. Liste ce que tu comptes utiliser
+3. Signale ce que je n'ai pas tranché
+4. Attends mon feu vert
+
+<span class="c"># contraintes</span>
+Design system Agorapulse, prototype HTML autonome.
+États vide / chargement / erreur inclus.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">09</div>
+</section>
+
+<!-- === 10 — CLAUDE.MD ================================================== -->
+<section class="slide" data-title="Le contexte projet" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">Levier 02</div>
+    <h2 class="sm">CLAUDE.md : ce qu'il doit savoir<br>avant de vous lire.</h2>
+    <p class="lede">Un fichier texte à la racine de votre dossier, lu au démarrage de chaque session. Il évite de réexpliquer le décor à chaque fois. <b>Court vaut mieux que complet</b> — une page suffit.</p>
+    <div class="panels two" style="grid-template-columns:1.15fr 1fr">
+      <div class="panel accent">
+        <header>Le vôtre, à copier<span class="tag">~/protos/CLAUDE.md</span></header>
+        <div class="body" style="padding:0">
+          <div class="prompt xs" style="border-left:0;flex:1"><span class="k">## Ce que c'est</span>
+Des prototypes d'écrans Agorapulse, faits par un PM
+pour illustrer une spec. Jetables, jamais mis en prod.
+
+<span class="k">## Le design system</span>
+Pour toute UI — composant, écran, modale, CSS, Figma :
+1. Déclencher le skill <span class="v">/design-guidelines</span> AVANT d'écrire.
+2. Le traiter comme la source de vérité.
+3. Chercher le composant existant avant d'en créer un.
+
+<span class="k">## Ce qu'on ne fait pas</span>
+- Pas de framework, pas d'étape de build.
+- Pas de valeur en dur : que des tokens du DS.
+- Pas de dépendance externe.</div>
+        </div>
+      </div>
+      <div class="panel dark">
+        <header>Deux pièges</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li><b>Ne le remplissez pas de philosophie.</b> « Nous valorisons l'excellence » ne change rien au résultat. Des règles vérifiables, ou rien.</li>
+            <li><b>Ne laissez pas de règle morte.</b> Une consigne périmée est pire que pas de consigne : elle est suivie.</li>
+          </ul>
+          <p style="margin-top:auto"><b>Astuce :</b> <span class="tk">/init</span> génère un premier jet à partir du dossier. À relire et à couper de moitié.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">10</div>
+</section>
+
+<!-- === 11 — CLAUDE.MD VS SKILLS ======================================== -->
+<section class="slide" data-title="Fichier ou skill" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">Où ranger quoi</div>
+    <h2 class="sm">« Dans ce projet… » ou « à chaque fois que… »</h2>
+    <p class="lede">C'est le seul test dont vous avez besoin. Si la phrase commence par <b>« dans ce projet »</b>, ça va dans <span class="tk">CLAUDE.md</span>. Si elle commence par <b>« à chaque fois que je fais X »</b>, c'est un skill.</p>
+    <div class="panels two">
+      <div class="panel">
+        <header>CLAUDE.md — le décor</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Ce qu'est le projet et pour qui</li>
+            <li>Les conventions locales</li>
+            <li>Les commandes à lancer</li>
+            <li>Ce qu'il ne faut pas toucher</li>
+          </ul>
+          <p style="margin-top:auto">Un fichier par dossier. Chargé automatiquement, tout le temps.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <header>Un skill — le savoir-faire</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Une expertise réutilisable, hors projet</li>
+            <li>Chargé <b>à la demande</b>, quand la tâche correspond</li>
+            <li>Chez nous : <span class="tk accent">/design-guidelines</span> pour l'UI</li>
+            <li>Il en existe d'autres — audit UX, rédaction, PRD</li>
+          </ul>
+          <p style="margin-top:auto">Déclenché par la description du skill, pas par vous. Sauf si vous le nommez.</p>
+        </div>
+      </div>
+    </div>
+    <div class="rule-strip"><span class="lbl">Le réflexe</span><span>Mettez la consigne « utilise <span class="tk">/design-guidelines</span> pour toute UI » dans votre CLAUDE.md. Les deux leviers se renforcent.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">11</div>
+</section>
+
+<!-- === 12 — LE SKILL : CE QUE C'EST ==================================== -->
+<section class="slide" data-title="Le skill design-guidelines" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">Levier 03</div>
+    <h2>/design-guidelines</h2>
+    <p class="lede">Le skill ne contient <b>aucune donnée du design system</b>. Il va la lire, à chaque fois, dans le repo <span class="tk">agorapulse/design</span>. C'est ce qui garantit qu'il ne vous sert jamais une valeur périmée.</p>
+    <div class="claims fill">
+      <div class="claim"><span class="n">CE QU'IL LIT</span><div class="cb"><h3>Les specs, en direct</h3><p>Pour chaque composant : le sélecteur, les classes, les modifieurs réels, les tokens <span class="tk">--comp-*</span> avec leurs valeurs résolues, et un exemple.</p></div></div>
+      <div class="claim"><span class="n">CE QU'IL IMPOSE</span><div class="cb"><h3>Chercher avant d'écrire</h3><p>Étape bloquante : trouver le composant existant <b>par intention</b> avant la première ligne. S'il couvre le besoin, on le prend tel quel.</p></div></div>
+      <div class="claim"><span class="n">CE QU'IL SAIT</span><div class="cb"><h3>Trois surfaces</h3><p><span class="tk">html-prototype</span> pour un fichier autonome, <span class="tk">angular</span> pour le vrai produit, <span class="tk">figma</span> pour des instances sur le canvas.</p></div></div>
+      <div class="claim"><span class="n">CE QU'IL EXIGE</span><div class="cb"><h3>Un accès au repo</h3><p><span class="tk">gh</span> authentifié, ou un clone local. <b>Sans ça il vous le dira</b> plutôt que d'inventer — c'est voulu.</p></div></div>
+    </div>
+    <div class="exit"><span class="lbl">Le seul geste à retenir</span><span>Le déclencher <b>au début</b> du travail d'UI, jamais après. Après, c'est de la réparation.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">12</div>
+</section>
+
+<!-- === 13 — CHERCHER PAR INTENTION ===================================== -->
+<section class="slide" data-title="Chercher par intention" data-sec="I · Le geste">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">I · Le geste</span></div>
+  <div class="canvas">
+    <div class="kicker">La règle bloquante</div>
+    <h2 class="sm">On cherche par <span class="hi">intention</span>, pas par nom.</h2>
+    <p class="lede">Le nom que vous avez en tête n'est presque jamais le nom du composant. Le skill traduit l'un vers l'autre — c'est une grande partie de sa valeur.</p>
+    <table class="tbl fill">
+      <tr><th style="width:34%">Ce que vous dites</th><th style="width:30%">Ce que le DS ship</th><th>Pourquoi ce n'est pas anodin</th></tr>
+      <tr><td class="k">un toast</td><td class="k"><b>Snackbar</b></td><td>Une recherche sur « toast » ne le trouve pas. Réécrit à la main, il perd sa chorégraphie d'apparition.</td></tr>
+      <tr><td class="k">une bannière d'info</td><td class="k"><b>Infobox</b></td><td>Quatre types, une icône par type. Un rectangle coloré n'en est pas un.</td></tr>
+      <tr><td class="k">un menu kebab</td><td class="k"><b>Action Dropdown</b></td><td>Largeurs et espacements définis. Et pas de sous-menu en cascade chez nous.</td></tr>
+      <tr><td class="k">une popup</td><td class="k"><b>Modale</b></td><td>Gère le focus, l'échappement, l'empilement. Un div en position fixe, non.</td></tr>
+      <tr><td class="k">une croix, un bouton d'icône</td><td class="k"><b>Icon Button</b></td><td>Taille de cible et états au standard. On ne redimensionne jamais une icône du DS.</td></tr>
+    </table>
+    <div class="rule-strip red"><span class="lbl">Le piège n°1</span><span>Une recherche vide ne prouve pas qu'un composant n'existe pas. C'est la première cause d'UI fabriquée.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">13</div>
+</section>
+
+<!-- === 14 — SECTION II ================================================= -->
+<section class="slide divider" data-title="II · L'écran en HTML" data-sec="Section II">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Section II</span></div>
+  <div class="canvas">
+    <div class="num">MODULE II · 50 MINUTES</div>
+    <h2>L'écran<br>en HTML</h2>
+    <p class="lede">Un fichier, zéro build, ouvrable en double-cliquant. C'est le format le plus court entre une idée et quelque chose qu'on peut montrer. <b>15 minutes de méthode, 35 minutes sur votre ticket.</b></p>
+    <div class="meta">
+      <div><b>On voit</b>Le premier prompt<br>Les tokens<br>Les conventions</div>
+      <div><b>On fait</b>Votre écran,<br>sur votre ticket</div>
+      <div><b>On sort avec</b>Un .html<br>collable dans Shortcut</div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">14</div>
+</section>
+
+<!-- === 15 — LE PREMIER PROMPT ========================================== -->
+<section class="slide" data-title="Le premier prompt" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">On y va</div>
+    <h2 class="sm">Le premier prompt.</h2>
+    <p class="lede">Deux commandes et une phrase. <span class="tk accent">/design-setup</span> câble le design system dans votre dossier — <b>une seule fois par projet</b>. Ensuite, <span class="tk accent">/design-build</span> à chaque écran.</p>
+    <div class="panels two" style="grid-template-columns:1fr 1fr">
+      <div class="panel dark">
+        <header>Une fois par dossier</header>
+        <div class="body" style="padding:0">
+          <div class="prompt sm" style="border-left:0"><span class="k">/design-setup</span></div>
+          <div style="padding:22px 24px 24px">
+            <p>Il détecte le type de projet et câble les feuilles de style du DS. Il vous montre le plan avant de toucher au dossier.</p>
+          </div>
+        </div>
+      </div>
+      <div class="panel accent">
+        <header>À chaque écran</header>
+        <div class="body" style="padding:0">
+          <div class="prompt sm" style="border-left:0;flex:1"><span class="k">/design-build</span> un panneau de filtres pour
+le calendrier : recherche, filtre par
+profil, par statut, par label, et un
+bouton pour tout remettre à zéro.
+
+<span class="c">Reste en mode plan tant que je n'ai
+pas validé. Prévois l'état « aucun
+filtre » et l'état « 0 résultat ».</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="rule-strip"><span class="lbl">Ce qui se passe ensuite</span><span>Il cherche les composants, vous liste ce qu'il compte utiliser, et attend. C'est là que vous lisez.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">15</div>
+</section>
+
+<!-- === 16 — LES TROIS TIERS DE TOKENS ================================== -->
+<section class="slide" data-title="Les tokens" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Le vocabulaire</div>
+    <h2 class="sm">Trois étages. On prend le plus haut qui convient.</h2>
+    <p class="lede">Vous n'aurez pas à les écrire vous-même — mais vous devez savoir les reconnaître, parce que c'est à ça qu'on voit qu'un écran est juste ou seulement joli.</p>
+    <div class="tiers">
+      <div class="tier on">
+        <span class="rank">1</span>
+        <span class="name">--comp-*</span>
+        <span class="what">Propre à un composant</span>
+        <span class="ex">--comp-button-height<br>--comp-badge-blue-background-color</span>
+      </div>
+      <div class="tier">
+        <span class="rank">2</span>
+        <span class="name">--sys-*</span>
+        <span class="what">Une intention, un rôle</span>
+        <span class="ex">--sys-color-border-color-default<br>--sys-text-style-*</span>
+      </div>
+      <div class="tier">
+        <span class="rank">3</span>
+        <span class="name">--ref-*</span>
+        <span class="what">La primitive brute</span>
+        <span class="ex">--ref-spacing-*, --ref-color-*<br>en dernier recours seulement</span>
+      </div>
+    </div>
+    <div class="exit"><span class="lbl">La seule chose à vérifier</span><span>S'il reste un <span class="tk">#</span> ou un <span class="tk">px</span> écrit à la main dans le résultat, c'est qu'un token a été sauté.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">16</div>
+</section>
+
+<!-- === 17 — LES COULEURS SÉMANTIQUES =================================== -->
+<section class="slide" data-title="Les couleurs" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Le vocabulaire</div>
+    <h2 class="sm">Une couleur, c'est un sens. Pas un goût.</h2>
+    <p class="lede">C'est le point où les prototypes dérivent le plus vite, et c'est celui qui se voit le plus. <b>On choisit une famille pour ce qu'elle veut dire</b>, jamais pour sa teinte.</p>
+    <table class="tbl fill">
+      <tr><th style="width:24%">Famille</th><th style="width:36%">Ce que ça veut dire</th><th>Le contresens à ne pas faire</th></tr>
+      <tr><td class="k"><span class="dot" style="background:#FF6726"></span>main · orange</td><td><b>Action principale</b>, accent de marque</td><td>Deux actions principales sur le même écran</td></tr>
+      <tr><td class="k"><span class="dot" style="background:#178DFE"></span>accent · bleu</td><td><b>Information</b>, lien, état sélectionné</td><td>Teinter une donnée statique en bleu — le bleu s'attend à être cliqué</td></tr>
+      <tr><td class="k"><span class="dot" style="background:#FD4F42"></span>error · rouge</td><td><b>Destructif</b>, état d'erreur</td><td>Un bouton principal rouge « pour attirer l'œil »</td></tr>
+      <tr><td class="k"><span class="dot" style="background:#11B43A"></span>success · vert</td><td><b>Confirmation</b></td><td>Décorer avec, faute de mieux</td></tr>
+      <tr><td class="k"><span class="dot" style="background:#C18A0E"></span>warning · jaune-orange</td><td><b>Prudence</b></td><td>Le confondre avec l'orange de marque</td></tr>
+      <tr><td class="k"><span class="dot" style="background:#6554C0"></span>feature-lock · violet</td><td><b>Verrouillé</b>, réservé à une offre supérieure</td><td>L'utiliser pour autre chose qu'un verrou</td></tr>
+      <tr><td class="k"><span class="dot" style="background:linear-gradient(90deg,#11ABA6,#6554C0)"></span>mermaid · dégradé</td><td><b>Surfaces d'IA, exclusivement</b></td><td>S'en servir comme décor. Jamais.</td></tr>
+    </table>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">17</div>
+</section>
+
+<!-- === 18 — AVANT / APRÈS ============================================== -->
+<section class="slide" data-title="Avant / après" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Reconnaître la dérive</div>
+    <h2 class="sm">Le même bouton, deux fois.</h2>
+    <p class="lede">Vous n'écrirez pas ce code. Mais si vous savez lire ces dix lignes, vous saurez dire en trois secondes si ce que Claude vous a rendu tient debout.</p>
+    <div class="panels two">
+      <div class="panel bad">
+        <header>Dérivé<span class="tag">plausible, et faux</span></header>
+        <div class="body" style="padding:0">
+          <div class="prompt xs" style="border-left:0;flex:1;background:#1A1016"><span class="c">&lt;!-- le double tiret n'existe pas ici --&gt;</span>
+&lt;button <span class="v">class="ap-button--primary"</span>
+  <span class="v">style="background:#FF6726;
+         padding:12px 20px;
+         border-radius:6px"</span>&gt;
+  Publier
+&lt;/button&gt;
+
+<span class="c">&lt;!-- et la modale, écrite à la main --&gt;</span>
+&lt;div <span class="v">class="modal-overlay"</span>&gt;
+  &lt;div <span class="v">class="modal-box"</span>&gt;…&lt;/div&gt;
+&lt;/div&gt;</div>
+        </div>
+      </div>
+      <div class="panel good">
+        <header>Juste<span class="tag">le composant, tel quel</span></header>
+        <div class="body" style="padding:0">
+          <div class="prompt xs" style="border-left:0;flex:1;background:#0E1A12"><span class="c">&lt;!-- modifieurs plats, aucune valeur en dur --&gt;</span>
+&lt;button <span class="v">class="ap-button primary orange"</span>&gt;
+  Publier
+&lt;/button&gt;
+
+
+
+
+<span class="c">&lt;!-- le composant que le DS ship déjà --&gt;</span>
+&lt;div <span class="v">class="ap-dialog"</span>&gt;…&lt;/div&gt;</div>
+        </div>
+      </div>
+    </div>
+    <div class="rule-strip"><span class="lbl">Trois signaux</span><span>Un <span class="tk red">--</span> dans un nom de classe · un <span class="tk red">style="…"</span> avec des couleurs ou des pixels · un nom de classe qui ne commence pas par <span class="tk">ap-</span>.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">18</div>
+</section>
+
+<!-- === 19 — LA RELECTURE =============================================== -->
+<section class="slide" data-title="Relire son écran" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Avant de montrer à qui que ce soit</div>
+    <h2 class="sm">Six questions, dans cet ordre.</h2>
+    <div class="chk">
+      <div class="it"><div class="box"></div><div><div class="t">Est-ce que ça répond au ticket ?</div><div class="d">Pas « est-ce joli ». Est-ce que l'utilisateur peut faire ce que le ticket décrit.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Y a-t-il une seule action principale ?</div><div class="d">Un seul bouton orange plein par écran. Le reste en secondaire, ghost ou lien.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Les trois états sont-ils là ?</div><div class="d">Vide, chargement, erreur. C'est ce qu'un dev vous demandera en premier.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Reste-t-il une valeur en dur ?</div><div class="d">Chercher <span class="tk">#</span> et <span class="tk">px</span> dans le fichier. S'il y en a, demander la correction.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Un composant a-t-il été refait à la main ?</div><div class="d">Demander : « qu'est-ce que tu as construit toi-même plutôt que d'utiliser le DS ? »</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Qu'est-ce que j'ai décidé sans le savoir ?</div><div class="d">Claude tranche pour vous quand vous ne tranchez pas. Demander la liste.</div></div></div>
+    </div>
+    <div class="exit"><span class="lbl">La question qui rapporte le plus</span><span>« Qu'est-ce que tu as dû inventer parce que je ne l'avais pas dit ? » — c'est là que sortent les vrais trous de spec.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">19</div>
+</section>
+
+<!-- === 20 — AUDIT ET FIX =============================================== -->
+<section class="slide" data-title="Auditer et corriger" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Les deux commandes de rattrapage</div>
+    <h2 class="sm">Auditer, puis corriger. Dans cet ordre.</h2>
+    <p class="lede">Elles marchent aussi sur un écran que vous n'avez pas fait — un vieux prototype, un bout de produit, une page trouvée. C'est le moyen le plus rapide de savoir si quelque chose respecte le DS.</p>
+    <div class="panels two">
+      <div class="panel">
+        <header>/design-audit</header>
+        <div class="body" style="padding:0">
+          <div class="prompt sm" style="border-left:0"><span class="k">/design-audit</span> <span class="v">mon-ecran.html</span></div>
+          <div style="padding:22px 24px 24px;display:flex;flex-direction:column;gap:14px;flex:1">
+            <p>Rend un rapport en trois piles : <b>Critique</b>, <b>Avertissements</b>, <b>Conforme</b>. Il ne touche à rien.</p>
+            <ul class="ul tight">
+              <li>Valeurs en dur</li>
+              <li>Composants refaits à la main</li>
+              <li>Modifieurs inventés</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <header>/design-fix</header>
+        <div class="body" style="padding:0">
+          <div class="prompt sm" style="border-left:0"><span class="k">/design-fix</span> <span class="v">mon-ecran.html</span></div>
+          <div style="padding:22px 24px 24px;display:flex;flex-direction:column;gap:14px;flex:1">
+            <p>Applique les corrections de l'audit, <b>avec votre accord</b>, une par une.</p>
+            <p style="margin-top:auto"><b>Lisez l'audit avant.</b> Certaines « corrections » révèlent une vraie question de produit que vous seul pouvez trancher.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rule-strip"><span class="lbl">Bon à savoir</span><span><span class="tk">/design-lookup</span> répond à « ça existe, ce composant ? » en dix secondes, sans rien construire.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">20</div>
+</section>
+
+<!-- === 21 — LAB 1 ====================================================== -->
+<section class="slide" data-title="LAB 1 — votre écran" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · <b>Lab</b></span></div>
+  <div class="canvas">
+    <div class="kicker">On arrête de regarder</div>
+    <h2 class="sm">Lab 1 — votre ticket, votre écran.</h2>
+    <div class="lab">
+      <div class="left">
+        <div class="lbl">La consigne</div>
+        <h3>Un écran.<br>Le vôtre.</h3>
+        <p>Ouvrez votre ticket Shortcut. Prenez <b>un seul écran</b>, ou un seul bout d'écran. Pas le parcours entier.</p>
+        <ul class="ul tight" style="margin-top:22px">
+          <li>Mode plan d'abord, toujours</li>
+          <li><span class="tk">/design-build</span> avec les cinq parties du prompt</li>
+          <li>Lisez le plan, corrigez-le, <b>puis</b> laissez faire</li>
+          <li>Passez la relecture en six points</li>
+        </ul>
+        <div class="clock">35 minutes<span>Je passe dans les rangs</span></div>
+      </div>
+      <div class="right">
+        <div class="lbl">Ce qui compte</div>
+        <h3>Pas le rendu.<br>Les trous.</h3>
+        <p>Le but n'est pas de sortir un bel écran. C'est de découvrir <b>ce que votre ticket ne disait pas</b>.</p>
+        <ul class="ul tight" style="margin-top:22px">
+          <li>Notez chaque question que Claude vous pose</li>
+          <li>Notez chaque décision qu'il a prise à votre place</li>
+          <li>Ces notes valent plus que l'écran</li>
+        </ul>
+        <div class="clock">À la fin<span>Chacun montre son écran en 60 s</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">21</div>
+</section>
+
+<!-- === 22 — DÉPANNAGE HTML ============================================= -->
+<section class="slide" data-title="Si ça coince" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Pendant le lab</div>
+    <h2 class="sm">Les quatre blocages fréquents.</h2>
+    <table class="tbl fill">
+      <tr><th style="width:32%">Le symptôme</th><th style="width:30%">La cause</th><th>Le geste</th></tr>
+      <tr><td><b>Il code sans passer par le DS</b></td><td>Le skill ne s'est pas déclenché</td><td>Le nommer explicitement : <span class="tk accent">/design-guidelines</span>, puis reformuler la demande.</td></tr>
+      <tr><td><b>« Je ne peux pas lire les specs »</b></td><td><span class="tk">gh</span> pas authentifié, ou pas d'accès au repo</td><td><span class="tk">gh auth status</span>, puis <span class="tk">gh auth login</span>. C'est un bon message : il refuse de deviner.</td></tr>
+      <tr><td><b>La page s'affiche sans style</b></td><td>Les feuilles du DS ne sont pas câblées</td><td><span class="tk accent">/design-setup</span> dans le dossier. Vérifier que le réseau passe.</td></tr>
+      <tr><td><b>Il tourne en rond sur une correction</b></td><td>Le contexte s'est alourdi</td><td><span class="tk">/clear</span>, puis repartir du fichier existant avec une demande précise.</td></tr>
+    </table>
+    <div class="rule-strip"><span class="lbl">Le réflexe utile</span><span>Quand quelque chose vous surprend, demandez-lui <b>pourquoi il l'a fait</b>. La réponse dit souvent ce qui manquait dans votre demande.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">22</div>
+</section>
+
+<!-- === 23 — LE FICHIER QUI VOYAGE ====================================== -->
+<section class="slide" data-title="Faire voyager l'écran" data-sec="II · HTML">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">II · L'écran en HTML</span></div>
+  <div class="canvas">
+    <div class="kicker">Sortir du dossier</div>
+    <h2 class="sm">Un écran qui ne s'ouvre pas ailleurs ne sert à rien.</h2>
+    <p class="lede">Par défaut, le prototype va chercher les styles du design system sur le réseau. Pratique chez vous, fragile ailleurs. <b>Dès que le fichier doit voyager</b> — un ticket, un Slack, une pièce jointe — demandez-le autonome.</p>
+    <div class="panels two">
+      <div class="panel">
+        <header>Pour travailler</header>
+        <div class="body">
+          <p>Le fichier appelle les styles du DS <b>en ligne</b>. Léger, toujours à jour, se recharge tout seul quand le DS bouge.</p>
+          <p style="margin-top:auto"><b>La limite :</b> sans réseau, ou dans un aperçu bridé, la page s'affiche nue.</p>
+        </div>
+      </div>
+      <div class="panel accent">
+        <header>Pour partager</header>
+        <div class="body" style="padding:0">
+          <div class="prompt sm" style="border-left:0">Rends ce fichier <span class="k">autonome</span> :
+tout le CSS du DS en ligne dans le
+fichier, aucun lien externe, aucun
+chemin absolu.</div>
+          <div style="padding:20px 24px 24px">
+            <p>Le fichier grossit — c'est normal, et ça n'a aucune importance. <b>Il s'ouvre partout, chez tout le monde.</b></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exit"><span class="lbl">Le test</span><span>Envoyez-vous le fichier par Slack et ouvrez-le depuis le téléchargement. S'il est nu, il n'était pas autonome.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">23</div>
+</section>
+
+<!-- === 24 — SECTION III ================================================ -->
+<section class="slide divider" data-title="III · Le passage en Figma" data-sec="Section III">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Section III</span></div>
+  <div class="canvas">
+    <div class="num">MODULE III · 35 MINUTES</div>
+    <h2>Le passage<br>en Figma</h2>
+    <p class="lede">Même skill, autre surface. Ici le livrable n'est pas du code : ce sont des <b>instances des composants publiés</b>, posées sur un canvas. C'est plus impressionnant, et nettement plus piégeux.</p>
+    <div class="meta">
+      <div><b>On voit</b>Quand ça vaut le coup<br>Les garde-fous<br>Les quatre règles</div>
+      <div><b>On fait</b>Pousser son écran<br>dans son propre fichier</div>
+      <div><b>On ne touche pas</b>Aux fichiers du DS<br>Aux fichiers des designers</div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">24</div>
+</section>
+
+<!-- === 25 — QUAND PASSER EN FIGMA ====================================== -->
+<section class="slide" data-title="Quand y aller" data-sec="III · Figma">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">III · Le passage en Figma</span></div>
+  <div class="canvas">
+    <div class="kicker">Le discernement</div>
+    <h2 class="sm">Le HTML suffit plus souvent qu'on ne croit.</h2>
+    <p class="lede">Figma n'est pas une étape supérieure. C'est un autre outil, avec un autre public. <b>Choisissez selon qui va regarder</b>, pas selon ce qui fait sérieux.</p>
+    <div class="panels two">
+      <div class="panel good">
+        <header>Restez en HTML si…</header>
+        <div class="body">
+          <ul class="ul tight yes">
+            <li>Vous illustrez une spec dans un ticket</li>
+            <li>Vous voulez qu'on <b>clique</b> pour comprendre</li>
+            <li>Vous testez un enchaînement, pas une mise en page</li>
+            <li>Le lecteur est un dev, un PM, un dirigeant</li>
+          </ul>
+          <p style="margin-top:auto">C'est le cas de <b>la grande majorité</b> de ce qu'un PM produit.</p>
+        </div>
+      </div>
+      <div class="panel accent">
+        <header>Passez en Figma si…</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Un designer va <b>reprendre et continuer</b> le travail</li>
+            <li>Il faut poser l'écran <b>à côté</b> d'écrans existants</li>
+            <li>Le sujet est une question de <b>mise en page</b>, pas de flux</li>
+            <li>Ça alimente un fichier projet déjà en cours</li>
+          </ul>
+          <p style="margin-top:auto">Dans ce cas, <b>prévenez le designer</b> avant, pas après.</p>
+        </div>
+      </div>
+    </div>
+    <div class="rule-strip red"><span class="lbl">Le contresens</span><span>Pousser en Figma « pour faire propre » double le travail et crée un deuxième endroit à maintenir.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">25</div>
+</section>
+
+<!-- === 26 — LES GARDE-FOUS ============================================= -->
+<section class="slide" data-title="Les garde-fous Figma" data-sec="III · Figma">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">III · <b>à lire avant de toucher à Figma</b></span></div>
+  <div class="canvas">
+    <div class="kicker">Non négociable</div>
+    <h2 class="sm">Votre fichier. Le vôtre, et rien d'autre.</h2>
+    <p class="lede">Contrairement au HTML, une erreur dans Figma peut abîmer le travail de quelqu'un d'autre — et l'API ne sait pas déplacer un nœud d'un fichier à l'autre pour réparer.</p>
+    <div class="claims fill">
+      <div class="claim"><span class="n">01</span><div class="cb"><h3>Un fichier bac à sable, à vous</h3><p>Créez un fichier neuf, à votre nom. <b>Jamais</b> un fichier du design system. <b>Jamais</b> le fichier projet d'un designer.</p></div></div>
+      <div class="claim"><span class="n">02</span><div class="cb"><h3>On instancie, on ne dessine pas</h3><p>Chaque élément doit être une <b>instance du composant publié</b>. Une frame dessinée qui ressemble à un bouton n'est pas un bouton.</p></div></div>
+      <div class="claim"><span class="n">03</span><div class="cb"><h3>On ne modifie jamais un composant du DS</h3><p>Ni le master, ni la taille d'une instance. Une icône du DS garde sa taille native, <b>toujours</b>.</p></div></div>
+      <div class="claim"><span class="n">04</span><div class="cb"><h3>On annonce avant de ranger</h3><p>Vider ou déplacer en masse, ça ressemble à une suppression. <b>Dites où ça part</b> avant, et où c'est arrivé après.</p></div></div>
+    </div>
+    <div class="exit"><span class="lbl">Si un composant manque</span><span>Faites-le dire explicitement, et signalez-le. Un élément fabriqué à la main ne doit jamais passer pour du DS.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">26</div>
+</section>
+
+<!-- === 27 — LES BONNES BIBLIOTHÈQUES =================================== -->
+<section class="slide" data-title="Les bonnes bibliothèques" data-sec="III · Figma">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">III · Le passage en Figma</span></div>
+  <div class="canvas">
+    <div class="kicker">Le piège le plus coûteux</div>
+    <h2 class="sm">Il existe un faux design system.<br>Il sort <span class="hi">premier</span>.</h2>
+    <p class="lede">La recherche de composants dans Figma classe mal. Une bibliothèque miroir non canonique remonte avant les vraies — elle est crédible, et elle est fausse.</p>
+    <div class="panels two">
+      <div class="panel good">
+        <header>Les vraies</header>
+        <div class="body">
+          <ul class="ul tight yes">
+            <li><b>V2 Atoms</b> — les composants de base</li>
+            <li><b>V2 Molecules</b> — les composants composés</li>
+            <li><b>V2 Style Guide · Tokens</b> — variables et styles de texte</li>
+            <li>Police <b>Averta Std</b></li>
+          </ul>
+          <p style="margin-top:auto">Le skill sait les cibler. Il faut juste ne pas le contredire.</p>
+        </div>
+      </div>
+      <div class="panel bad">
+        <header>Le miroir à fuir</header>
+        <div class="body">
+          <ul class="ul tight no">
+            <li><b>Archie UI Kit</b> — non canonique</li>
+            <li>Autre police (Hanken Grotesk)</li>
+            <li>Ses propres tokens sémantiques</li>
+          </ul>
+          <p style="margin-top:auto">Un écran monté dessus <b>a l'air juste</b> et ne l'est pas. C'est le pire des cas : personne ne le voit avant le dev.</p>
+        </div>
+      </div>
+    </div>
+    <div class="rule-strip"><span class="lbl">Le contrôle</span><span>Cliquez sur un composant posé : sa bibliothèque d'origine doit être une <b>V2</b>. Sinon, on recommence.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">27</div>
+</section>
+
+<!-- === 28 — LES QUATRE RÈGLES DE SURVIE ================================ -->
+<section class="slide" data-title="Quatre règles de survie" data-sec="III · Figma">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">III · Le passage en Figma</span></div>
+  <div class="canvas">
+    <div class="kicker">La méthode</div>
+    <h2 class="sm">Quatre règles, et ça se passe bien.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="n">RÈGLE 01</div>
+        <div class="t">Le fichier d'abord</div>
+        <div class="d">Créez le fichier vide, liez-y les bibliothèques V2, <b>puis</b> donnez le lien à Claude. Jamais l'inverse.</div>
+        <div class="flag">Sinon il crée<br>là où il ne faut pas.</div>
+      </div>
+      <div class="step">
+        <div class="n">RÈGLE 02</div>
+        <div class="t">Une commande dédiée</div>
+        <div class="d"><span class="tk accent">/design-figma</span> avec la description et le lien du fichier. C'est ce qui bascule le skill en mode Figma.</div>
+        <div class="flag">Il chargera ses<br>propres prérequis seul.</div>
+      </div>
+      <div class="step">
+        <div class="n">RÈGLE 03</div>
+        <div class="t">Par intention, encore</div>
+        <div class="d">Même règle qu'en HTML, en plus strict : la recherche Figma classe mal, donc <b>une recherche vide ne prouve rien</b>.</div>
+        <div class="flag">Faire chercher des<br>synonymes avant d'admettre.</div>
+      </div>
+      <div class="step">
+        <div class="n">RÈGLE 04</div>
+        <div class="t">Tout est lié</div>
+        <div class="d">Couleurs, espacements, typographie : liés aux variables du DS. <b>Aucun hex, aucun pixel</b> posé à la main.</div>
+        <div class="flag">C'est ce qui fait suivre<br>l'écran quand le DS bouge.</div>
+      </div>
+    </div>
+    <div class="exit"><span class="lbl">Le rythme</span><span>Section par section. Vous regardez le canvas se remplir en direct — arrêtez-le dès que ça part de travers.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">28</div>
+</section>
+
+<!-- === 29 — RANGER LE FICHIER ========================================== -->
+<section class="slide" data-title="Ranger le fichier" data-sec="III · Figma">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">III · Le passage en Figma</span></div>
+  <div class="canvas">
+    <div class="kicker">Les conventions maison</div>
+    <h2 class="sm">Un fichier se lit, il ne se raconte pas.</h2>
+    <p class="lede">Si un designer doit reprendre votre fichier, ces quatre habitudes lui font gagner une demi-heure. Elles vous coûtent une phrase de plus dans le prompt.</p>
+    <div class="claims fill">
+      <div class="claim"><span class="n">01</span><div class="cb"><h3>Des sections côte à côte</h3><p>Les explorations sur <b>une même ligne</b>, pas empilées. On les compare d'un balayage horizontal, sans scroller sur des milliers de pixels.</p></div></div>
+      <div class="claim"><span class="n">02</span><div class="cb"><h3>Un fond sombre sous les maquettes</h3><p>Navy désaturé sur les sections : c'est ce qui fait ressortir des écrans blancs. <b>Un fond blanc sur blanc ne montre rien.</b></p></div></div>
+      <div class="claim"><span class="n">03</span><div class="cb"><h3>Pas de cartes d'explication</h3><p>Le board montre le design. Le raisonnement va <b>dans la conversation</b> ou dans la description du composant, pas sur le canvas.</p></div></div>
+      <div class="claim"><span class="n">04</span><div class="cb"><h3>Des composants, pas des copies</h3><p>Dès le deuxième exemplaire d'un élément, on en fait un composant. Sinon chaque arbitrage est à réappliquer partout, à la main.</p></div></div>
+    </div>
+    <div class="rule-strip"><span class="lbl">Et la couverture</span><span>« Ajoute une Cover » veut dire <b>instancier le composant Cover et le remplir</b>. Jamais dessiner une couverture.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">29</div>
+</section>
+
+<!-- === 30 — LAB 2 ====================================================== -->
+<section class="slide" data-title="LAB 2 — dans Figma" data-sec="III · Figma">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">III · <b>Lab</b></span></div>
+  <div class="canvas">
+    <div class="kicker">On y retourne</div>
+    <h2 class="sm">Lab 2 — le même écran, dans votre fichier.</h2>
+    <div class="lab">
+      <div class="left">
+        <div class="lbl">La consigne</div>
+        <h3>Reprenez<br>l'écran du lab 1.</h3>
+        <p>Pas un nouveau sujet. <b>Le même écran</b>, poussé dans un fichier Figma neuf, à votre nom.</p>
+        <ul class="ul tight" style="margin-top:22px">
+          <li>Créez le fichier, liez les bibliothèques V2</li>
+          <li><span class="tk">/design-figma</span> + la description + le lien</li>
+          <li>Regardez le canvas se remplir, arrêtez si ça dérape</li>
+          <li>Cliquez sur trois composants : bibliothèque V2 ?</li>
+        </ul>
+        <div class="clock">25 minutes<span>Je passe dans les rangs</span></div>
+      </div>
+      <div class="right">
+        <div class="lbl">Le vrai objectif</div>
+        <h3>Savoir<br>quand s'arrêter.</h3>
+        <p>Certains d'entre vous vont trouver ça <b>plus lent que le HTML</b>. C'est une conclusion valable — c'est même souvent la bonne.</p>
+        <ul class="ul tight" style="margin-top:22px">
+          <li>Notez le moment où vous auriez dû rester en HTML</li>
+          <li>Notez ce qu'il a dû fabriquer à la main</li>
+          <li>Ne réparez rien à la main dans Figma : redemandez</li>
+        </ul>
+        <div class="clock">À la fin<span>On compare les deux versions</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">30</div>
+</section>
+
+<!-- === 31 — SECTION IV ================================================= -->
+<section class="slide divider" data-title="IV · Après l'atelier" data-sec="Section IV">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Section IV</span></div>
+  <div class="canvas">
+    <div class="num">MODULE IV · 10 MINUTES</div>
+    <h2>Après<br>l'atelier</h2>
+    <p class="lede">Ce que vous venez d'apprendre ne vaut que si vous le refaites <b>la semaine prochaine, sur un ticket ordinaire</b>. Voilà ce qu'il faut garder sous la main pour que ça arrive.</p>
+    <div class="meta">
+      <div><b>On pose</b>La limite PM / designer</div>
+      <div><b>On garde</b>Le mémo<br>Le dépannage</div>
+      <div><b>On ouvre</b>Vos questions</div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">31</div>
+</section>
+
+<!-- === 32 — OÙ S'ARRÊTE LE PM ========================================== -->
+<section class="slide" data-title="Où s'arrête le PM" data-sec="IV · Après">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">IV · Après l'atelier</span></div>
+  <div class="canvas">
+    <div class="kicker">La ligne</div>
+    <h2 class="sm">Vous illustrez une intention.<br>Vous ne concevez pas le produit.</h2>
+    <p class="lede">Cette ligne n'est pas une politesse. Un écran généré est <b>convaincant bien avant d'être juste</b> — et c'est exactement ce qui le rend dangereux quand il circule sans être annoncé pour ce qu'il est.</p>
+    <div class="panels three">
+      <div class="panel good">
+        <header>Allez-y</header>
+        <div class="body">
+          <ul class="ul tight yes">
+            <li>Illustrer un ticket</li>
+            <li>Comparer deux options</li>
+            <li>Trouver les trous de votre spec</li>
+            <li>Vérifier qu'un composant existe</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel">
+        <header>Demandez d'abord</header>
+        <div class="body">
+          <ul class="ul tight">
+            <li>Toucher à un fichier Figma partagé</li>
+            <li>Un écran qui part à un client</li>
+            <li>Un parcours entier, pas un écran</li>
+            <li>Un composant qui n'existe pas encore</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel bad">
+        <header>Passez la main</header>
+        <div class="body">
+          <ul class="ul tight no">
+            <li>Trancher une question de conception</li>
+            <li>Ajouter au design system</li>
+            <li>Faire passer un proto pour une maquette validée</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="exit"><span class="lbl">La phrase à coller à côté de chaque écran</span><span>« Prototype fait par moi pour illustrer le ticket — pas une maquette validée. »</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">32</div>
+</section>
+
+<!-- === 33 — LE MÉMO ==================================================== -->
+<section class="slide" data-title="Le mémo" data-sec="IV · Après">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">IV · Après l'atelier</span></div>
+  <div class="canvas">
+    <div class="kicker">À garder</div>
+    <h2 class="sm">Sept commandes. C'est tout.</h2>
+    <table class="tbl fill">
+      <tr><th style="width:26%">Commande</th><th style="width:32%">Quand</th><th>Ce qu'elle fait</th></tr>
+      <tr><td class="k"><b>/design-setup</b></td><td>Une fois par dossier</td><td>Câble le design system dans le projet</td></tr>
+      <tr><td class="k"><b>/design-build</b></td><td>Chaque nouvel écran</td><td>Construit à partir d'une description, d'une capture ou d'un lien Figma</td></tr>
+      <tr><td class="k"><b>/design-audit</b></td><td>Avant de montrer</td><td>Rapport Critique / Avertissements / Conforme, sans rien modifier</td></tr>
+      <tr><td class="k"><b>/design-fix</b></td><td>Après l'audit</td><td>Applique les corrections, avec votre accord</td></tr>
+      <tr><td class="k"><b>/design-figma</b></td><td>Module 3</td><td>Construit dans Figma à partir des composants publiés</td></tr>
+      <tr><td class="k"><b>/design-lookup</b></td><td>En dix secondes</td><td>« Ce composant existe ? Il s'appelle comment ? »</td></tr>
+      <tr><td class="k"><b>/design-prompt</b></td><td>Quand vous séchez</td><td>Rédige le prompt Claude Code pour la tâche que vous décrivez</td></tr>
+    </table>
+    <div class="rule-strip"><span class="lbl">Et la seule habitude</span><span>Mode plan, toujours. C'est le geste qui rapporte le plus, et le plus facile à oublier.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">33</div>
+</section>
+
+<!-- === 34 — DÉPANNAGE GÉNÉRAL ========================================== -->
+<section class="slide" data-title="Dépannage" data-sec="IV · Après">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">IV · <b>à garder ouvert</b></span></div>
+  <div class="canvas">
+    <div class="kicker">Quand ça ne marche pas</div>
+    <h2 class="sm">Six pannes, six gestes.</h2>
+    <div class="chk">
+      <div class="it"><div class="box"></div><div><div class="t">Le skill ne se déclenche pas</div><div class="d">Le nommer : <span class="tk">/design-guidelines</span>. Vérifier le plugin avec <span class="tk">/plugin</span>.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">« Je ne peux pas lire les specs »</div><div class="d"><span class="tk">gh auth status</span> puis <span class="tk">gh auth login</span>. Vérifier l'accès à <span class="tk">agorapulse/design</span>.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Figma répond « rien de sélectionné »</div><div class="d">Normal si le fichier est vide. Ça n'empêche pas de construire — continuez.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Le MCP Figma est déconnecté</div><div class="d"><span class="tk">/mcp</span> → Figma → réauthentifier. Attention au bon compte Figma si vous en avez plusieurs.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Il répète la même erreur</div><div class="d"><span class="tk">/clear</span> et repartir du fichier existant. Le contexte s'était encombré.</div></div></div>
+      <div class="it"><div class="box"></div><div><div class="t">Le résultat est joli mais générique</div><div class="d">Le skill n'a pas tourné. Recommencer en le nommant d'abord — ne pas rafistoler après.</div></div></div>
+    </div>
+    <div class="exit"><span class="lbl">En dernier recours</span><span>Un message d'erreur du skill est une bonne nouvelle : il refuse de deviner. C'est un silence poli qui devrait vous inquiéter.</span></div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">34</div>
+</section>
+
+<!-- === 35 — QUESTIONS ================================================== -->
+<section class="slide divider" data-title="Questions" data-sec="Fin">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse · Product</span><span class="sec">Fin</span></div>
+  <div class="canvas">
+    <div class="num">MERCI</div>
+    <h2>Questions</h2>
+    <p class="lede">Et si vous n'en avez pas maintenant : ouvrez un écran la semaine prochaine, sur un vrai ticket. <b>C'est là qu'elles arrivent.</b></p>
+    <div class="meta">
+      <div><b>Le deck</b>Reste en ligne<br>Touche O pour le plan</div>
+      <div><b>Le canal</b>Vos écrans,<br>vos ratés, vos trouvailles</div>
+      <div><b>Et surtout</b>Montrez vos écrans<br>même les moches</div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div><div class="folio">35</div>
+</section>
+
+</div><!-- /.stage -->
+</div><!-- /.viewport -->
+
+<div class="overview" id="overview">
+  <h4>Plan — cliquer pour aller à la slide · O pour fermer</h4>
+  <div class="ov-grid" id="ovGrid"></div>
+</div>
+
+<div class="hint" id="hint">← → naviguer · O plan · F plein écran · E éditer · un chiffre pour sauter</div>
+
+<script>
+/* ==========================================================================
+   === 1. SCÈNE : mise à l'échelle uniforme ===============================
+   La scène fait toujours 1920×1080. On la met à l'échelle en entier, ce qui
+   garantit qu'aucune slide ne se reflowe — y compris sur un téléphone.
+   ========================================================================== */
+const stage=document.getElementById('stage');
+function fit(){
+  const s=Math.min(innerWidth/1920,innerHeight/1080);
+  stage.style.transform=`translate(-50%,-50%) scale(${s})`;
+}
+addEventListener('resize',fit);fit();
+
+/* ==========================================================================
+   === 2. NAVIGATION ======================================================
+   ========================================================================== */
+const slides=[...document.querySelectorAll('.slide')];
+const total=slides.length;
+let cur=0;
+
+/* la pagination est dérivée de l'ordre des slides : insérer une slide
+   ne demande aucune renumérotation manuelle */
+slides.forEach((s,i)=>{
+  const f=s.querySelector('.folio');
+  if(f) f.textContent=String(i+1).padStart(2,'0');
+});
+
+function go(i,push){
+  i=Math.max(0,Math.min(total-1,i));
+  if(i===cur && push!==true){paint();return;}
+  slides[cur].classList.remove('active');
+  cur=i;
+  /* on relance les animations d'entrée en forçant un reflow */
+  const s=slides[cur];
+  s.classList.add('active');
+  void s.offsetWidth;
+  paint();
+  if(location.hash!=='#'+(cur+1)) history.replaceState(null,'','#'+(cur+1));
+}
+function paint(){
+  slides.forEach(s=>{
+    const bar=s.querySelector('.progress i');
+    if(bar) bar.style.width='0%';
+  });
+  const bar=slides[cur].querySelector('.progress i');
+  if(bar) bar.style.width=(((cur+1)/total)*100).toFixed(2)+'%';
+  [...document.querySelectorAll('.ov-item')].forEach((el,i)=>el.classList.toggle('cur',i===cur));
+}
+const next=()=>go(cur+1), prev=()=>go(cur-1);
+
+let buffer='',bt;
+addEventListener('keydown',e=>{
+  if(document.body.classList.contains('editing')){
+    if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveFile();}
+    if(e.key==='Escape'||(e.key.toLowerCase()==='e'&&!e.target.isContentEditable)) toggleEdit(false);
+    return;
+  }
+  const k=e.key.toLowerCase();
+  if(['arrowright',' ','pagedown','n'].includes(k)){e.preventDefault();next();}
+  else if(['arrowleft','pageup','p'].includes(k)){e.preventDefault();prev();}
+  else if(k==='home'){go(0);}
+  else if(k==='end'){go(total-1);}
+  else if(k==='o'){toggleOverview();}
+  else if(k==='escape'){document.getElementById('overview').classList.remove('on');}
+  else if(k==='e'){toggleEdit(true);}
+  else if(k==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+  else if(/^[0-9]$/.test(k)){buffer+=k;clearTimeout(bt);bt=setTimeout(()=>{const n=parseInt(buffer,10);if(n>=1&&n<=total)go(n-1);buffer='';},600);}
+});
+
+/* clic / tap : moitié droite = suivant, moitié gauche = précédent */
+document.querySelector('.viewport').addEventListener('click',e=>{
+  if(document.body.classList.contains('editing')) return;
+  if(e.target.closest('[data-go]')) return;
+  (e.clientX>innerWidth*.5?next:prev)();
+});
+document.querySelectorAll('[data-go]').forEach(a=>{
+  a.addEventListener('click',e=>{e.stopPropagation();go(parseInt(a.dataset.go,10)-1);});
+});
+
+/* swipe tactile */
+let tx=0,ty=0;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)) (dx<0?next:prev)();
+},{passive:true});
+
+/* ==========================================================================
+   === 3. MODE PLAN =======================================================
+   ========================================================================== */
+const ov=document.getElementById('overview');
+document.getElementById('ovGrid').innerHTML=slides.map((s,i)=>
+  `<div class="ov-item" data-i="${i}"><div class="n">${String(i+1).padStart(2,'0')}${s.dataset.sec?' · '+s.dataset.sec:''}</div><div class="t">${s.dataset.title||''}</div></div>`
+).join('');
+document.querySelectorAll('.ov-item').forEach(el=>{
+  el.addEventListener('click',()=>{go(parseInt(el.dataset.i,10));ov.classList.remove('on');});
+});
+function toggleOverview(){ov.classList.toggle('on');}
+
+/* ==========================================================================
+   === 4. ÉDITION EN LIGNE ================================================
+   Corriger une formulation pendant l'atelier sans rouvrir l'éditeur.
+   ========================================================================== */
+const EDITABLE='h1,h2,h3,.lede,.cb p,.panel .body p,.ul li,.step .t,.step .d,.step .flag,'+
+  '.chk .t,.chk .d,.tier .what,.tier .ex,.kicker,.exit span,.rule-strip span,.lab p,'+
+  '.toc a .t,.toc a .d,.cover .sub,.cover .desc,.mod .t,.mod .d,.tbl td,.meta div';
+function toggleEdit(on){
+  const active=document.body.classList.contains('editing');
+  const want=(on===undefined)?!active:on;
+  document.body.classList.toggle('editing',want);
+  document.querySelectorAll(EDITABLE).forEach(el=>{
+    if(want) el.setAttribute('contenteditable','true'); else el.removeAttribute('contenteditable');
+  });
+  document.getElementById('hint').classList.toggle('hide',want);
+}
+function saveFile(){
+  document.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));
+  document.body.classList.remove('editing');
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download='montrer-pas-decrire.html';a.click();
+  setTimeout(()=>toggleEdit(true),80);
+}
+
+/* ==========================================================================
+   === 5. DÉMARRAGE =======================================================
+   ========================================================================== */
+const start=parseInt((location.hash||'').replace('#',''),10);
+if(start>=1&&start<=total){slides[0].classList.remove('active');cur=start-1;slides[cur].classList.add('active');}
+paint();
+setTimeout(()=>document.getElementById('hint').classList.add('hide'),5200);
+addEventListener('mousemove',()=>{
+  const h=document.getElementById('hint');
+  if(document.body.classList.contains('editing')) return;
+  h.classList.remove('hide');clearTimeout(h._t);
+  h._t=setTimeout(()=>h.classList.add('hide'),3000);
+});
+</script>
+</body>
+</html>

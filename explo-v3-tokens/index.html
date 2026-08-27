@@ -400,7 +400,11 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .step .n{font-family:var(--disp);font-weight:900;font-size:78px;line-height:.9;letter-spacing:-.05em;color:var(--ink-200)}
 .step .t{font-family:var(--disp);font-weight:800;font-size:31px;margin-top:16px;letter-spacing:-.024em}
 .step .d{font-family:var(--sans);font-size:21px;line-height:1.45;color:var(--text-secondary);margin-top:14px}
-.step .flag{display:inline-block;margin-top:22px;font:700 12px/1 var(--mono);letter-spacing:.14em;
+.step .meta{display:flex;gap:32px;margin-top:20px;flex-wrap:wrap}
+.step .meta span{font-family:var(--sans);font-size:17px;line-height:1.35;max-width:220px}
+.step .meta b{display:block;font:700 10px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-400);margin-bottom:6px}
+.step .flag{display:inline-block;margin-top:20px;font:700 12px/1 var(--mono);letter-spacing:.14em;
   border:2px solid var(--ink-1000);padding:8px 10px}
 .step:nth-child(1) .n{color:var(--blue)}
 .step:nth-child(2) .n{color:var(--accent)}
@@ -1162,18 +1166,21 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
         <div class="n">01</div>
         <div class="t">Ajout des 3 librairies</div>
         <div class="d">Les trois nouvelles librairies arrivent à côté de l'existant, qui continue de tourner.</div>
+        <div class="meta"><span><b>Qui</b>Le design system</span><span><b>Effort</b>Négligeable</span></div>
         <div class="flag">RIEN NE CASSE</div>
       </div>
       <div class="step">
         <div class="n">02</div>
         <div class="t">Migration du Design System</div>
         <div class="d">Figma et code <b>en parallèle</b>. Chaque composant est rebranché un par un.</div>
+        <div class="meta"><span><b>Qui</b>Design et tech</span><span><b>Effort</b>Rapide</span></div>
         <div class="flag">FILET : L'AVANT / APRÈS</div>
       </div>
       <div class="step">
         <div class="n">03</div>
         <div class="t">Migration des features</div>
         <div class="d">On remplace en priorité ce qui se voit : bordures, survols, fonds.</div>
+        <div class="meta"><span><b>Qui</b>Les designers, appuyés par la tech</span><span><b>Effort</b>≈ 2 jours par périmètre, d'après le POC</span></div>
         <div class="flag">BORDERS · HOVERS · BACKGROUNDS</div>
       </div>
     </div>

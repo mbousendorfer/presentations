@@ -188,6 +188,7 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
    ========================================================================== */
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);border:3px solid var(--border-strong);margin-top:26px}
 .kpis.four{grid-template-columns:repeat(4,1fr)}
+.kpis.two{grid-template-columns:repeat(2,1fr)}
 .kpi{padding:30px 32px 34px;border-right:1px solid var(--border-subtle);position:relative;overflow:hidden}
 .kpi:last-child{border-right:0}
 .kpi .v{font-family:var(--disp);font-weight:900;font-size:58px;line-height:1;letter-spacing:-.035em}
@@ -692,10 +693,9 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="kicker">État des lieux</div>
     <h2>Aujourd'hui, on ne nomme<br>que des <span class="hi">valeurs</span></h2>
     <p class="lede">Les designers savent quelle couleur utiliser dans quel cas. Mais cette connaissance n'est écrite nulle part : dans les outils, une couleur est désignée par son code, jamais par son usage — <span class="tk">red-60</span> plutôt que « la couleur d'erreur ».</p>
-    <div class="kpis" style="margin:auto 0">
+    <div class="kpis two" style="margin:auto 0">
       <div class="kpi on"><div class="v">0</div><div class="l">règle écrite dans le système. La connaissance existe — elle est dans la tête des designers, pas dans les outils.</div><div class="bar"></div></div>
       <div class="kpi"><div class="v">1</div><div class="l">projet pilote — les écrans Settings, pour ceux qui s'en souviennent. Ça a très bien fonctionné, mais ça n'est jamais allé plus loin.</div></div>
-      <div class="kpi"><div class="v">déjà là</div><div class="l">côté code, la couche des rôles existe déjà. C'est Figma et le produit qui ne l'ont pas suivie.</div></div>
     </div>
   </div>
   <div class="progress"><i></i></div>

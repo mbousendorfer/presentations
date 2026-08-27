@@ -384,7 +384,7 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .seg.role{background:var(--orange-soft)}.seg.role b{color:#B03F06}.seg.role em{color:#B03F06;opacity:.7}
 .seg.var{background:var(--blue-soft)}.seg.var b{color:#086DC9}.seg.var em{color:#086DC9;opacity:.7}
 .seg.state{background:var(--ink-1000)}.seg.state b{color:#fff}.seg.state em{color:rgba(255,255,255,.55)}
-.tok-note{display:flex;align-items:center;padding-left:34px;font-family:var(--sans);font-size:21px;
+.tok-note{align-self:center;padding-left:34px;font-family:var(--sans);font-size:21px;
   line-height:1.35;color:var(--text-secondary)}
 .tok-note b{color:var(--text-default);font-weight:700}
 
@@ -661,10 +661,10 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
       <a data-go="4"><span class="rn">I</span><span class="rt">Le constat</span><span class="rp">04 — 07</span></a>
       <a data-go="8"><span class="rn">II</span><span class="rt">Pourquoi maintenant</span><span class="rp">08 — 11</span></a>
       <a data-go="12"><span class="rn">III</span><span class="rt">La nouvelle palette</span><span class="rp">12 — 18</span></a>
-      <a data-go="19"><span class="rn">IV</span><span class="rt">La couche des rôles</span><span class="rp">19 — 24</span></a>
-      <a data-go="25"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">25 — 32</span></a>
-      <a data-go="33"><span class="rn">VI</span><span class="rt">Les exceptions</span><span class="rp">33 — 34</span></a>
-      <a data-go="35"><span class="rn">VII</span><span class="rt">Le déploiement</span><span class="rp">35 — 37</span></a>
+      <a data-go="19"><span class="rn">IV</span><span class="rt">La couche des rôles</span><span class="rp">19 — 23</span></a>
+      <a data-go="24"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">24 — 31</span></a>
+      <a data-go="32"><span class="rn">VI</span><span class="rt">Les exceptions</span><span class="rp">32 — 33</span></a>
+      <a data-go="34"><span class="rn">VII</span><span class="rt">Le déploiement</span><span class="rp">34 — 36</span></a>
     </nav>
   </div>
   <div class="progress"><i></i></div>
@@ -991,7 +991,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">IV</div>
     <h2 class="dv-t">La couche des rôles</h2>
     <p class="dv-p">Le cœur systémique du design system : ce qui fait qu'une décision vaut partout, et les garde-fous qui empêchent cette couche de se remplir n'importe comment.</p>
-    <div class="dv-r">19 — 24</div>
+    <div class="dv-r">19 — 23</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1037,23 +1037,6 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="folio"></div>
 </section>
 
-<!-- === 19 — LE TIER SYS DANS FIGMA === -->
-<section class="slide" data-title="La couche des rôles dans Figma" data-sec="IV · La couche des rôles">
-  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>IV</b> · La couche des rôles</span></div>
-  <div class="canvas">
-    <div class="kicker">Concrètement, dans Figma</div>
-    <h2>Chaque rôle pointe vers<br>une <span class="hi">valeur</span></h2>
-    <div class="shots three">
-      <div class="shot"><div class="cap">color / surface / input</div><img src="img/s08-arch-1.png" alt="Tokens sys color/surface/input pointant vers des ref"></div>
-      <div class="shot"><div class="cap">color / text</div><img src="img/s08-arch-2.png" alt="Tokens sys color/text pointant vers des ref"></div>
-      <div class="shot"><div class="cap">color / surface</div><img src="img/s08-arch-3.png" alt="Tokens sys color/surface pointant vers des ref"></div>
-    </div>
-  </div>
-  <div class="progress"><i></i></div>
-  <div class="folio"></div>
-</section>
-
 <!-- === 20 — LE NOMMAGE === -->
 <section class="slide" data-title="Le nommage" data-sec="IV · La couche des rôles">
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
@@ -1091,30 +1074,17 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="folio"></div>
 </section>
 
-<!-- === 21 — LES GARDE-FOUS === -->
-<section class="slide" data-title="Les garde-fous" data-sec="IV · La couche des rôles">
+<!-- === 19 — LE TIER SYS DANS FIGMA === -->
+<section class="slide" data-title="La couche des rôles dans Figma" data-sec="IV · La couche des rôles">
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>IV</b> · La couche des rôles</span></div>
   <div class="canvas">
-    <div class="kicker">Les garde-fous</div>
-    <h2>Ce qu'on <span class="hi">refuse</span> de créer</h2>
-    <div class="claims fill">
-      <div class="claim"><span class="n">01</span><div class="cb">
-        <h3>Un rôle doit être confirmé deux fois</h3>
-        <p>Un usage ne devient une règle qu'après l'avoir constaté sur <b>deux composants indépendants</b>. Un seul composant, c'est une exception.</p>
-      </div></div>
-      <div class="claim"><span class="n">02</span><div class="cb">
-        <h3>Un nom qui n'apporte rien n'existe pas</h3>
-        <p>Renommer une valeur sans lui donner de sens ajoute une couche pour rien. On en a supprimé.</p>
-      </div></div>
-      <div class="claim"><span class="n">03</span><div class="cb">
-        <h3>Un rôle dit à quoi ça sert</h3>
-        <p>« La couleur d'erreur », jamais « le rouge de l'en-tête de modale ».</p>
-      </div></div>
-      <div class="claim"><span class="n">04</span><div class="cb">
-        <h3>Ce qu'on ne nomme pas</h3>
-        <p>Les petits espacements et les tailles d'icône : leur nom actuel est déjà parlant.</p>
-      </div></div>
+    <div class="kicker">Concrètement, dans Figma</div>
+    <h2>Chaque rôle pointe vers<br>une <span class="hi">valeur</span></h2>
+    <div class="shots three">
+      <div class="shot"><div class="cap">color / surface / input</div><img src="img/s08-arch-1.png" alt="Tokens sys color/surface/input pointant vers des ref"></div>
+      <div class="shot"><div class="cap">color / text</div><img src="img/s08-arch-2.png" alt="Tokens sys color/text pointant vers des ref"></div>
+      <div class="shot"><div class="cap">color / surface</div><img src="img/s08-arch-3.png" alt="Tokens sys color/surface pointant vers des ref"></div>
     </div>
   </div>
   <div class="progress"><i></i></div>
@@ -1154,7 +1124,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">V</div>
     <h2 class="dv-t">Avant / après</h2>
     <p class="dv-p">Les mêmes composants, rebranchés sur les rôles. Ce qui s'aligne sur une règle commune, ce qui se complète — et ce qui disparaît parce que ce n'était pas réellement utilisable.</p>
-    <div class="dv-r">25 — 32</div>
+    <div class="dv-r">24 — 31</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1307,7 +1277,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">VI</div>
     <h2 class="dv-t">Les exceptions</h2>
     <p class="dv-p">Certains composants ont un besoin qu'aucune règle générale ne couvre. Voilà comment on les traite sans rouvrir la porte au désordre.</p>
-    <div class="dv-r">33 — 34</div>
+    <div class="dv-r">32 — 33</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1355,7 +1325,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">VII</div>
     <h2 class="dv-t">Le déploiement</h2>
     <p class="dv-p">Trois étapes, dans cet ordre, avec le même critère de sortie à chaque fois — puis quatre PR, une par tribe.</p>
-    <div class="dv-r">35 — 37</div>
+    <div class="dv-r">34 — 36</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>

@@ -842,9 +842,28 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="kicker">Le nuancier — avant</div>
     <h2>9 familles, <span class="hi">des rampes inégales</span></h2>
     <div class="palette">
-      <div class="pal-note">Les paliers ne portent pas les mêmes noms d'une famille à l'autre, donc les rampes sont alignées du plus clair au plus foncé. <b>Même grille que la slide suivante : passez de l'une à l'autre pour voir ce qui change.</b></div>
+      <div class="pal-note">Les paliers ne portent pas les mêmes noms d'une famille à l'autre, donc les rampes sont alignées du plus clair au plus foncé. <b>Même grille que la slide 14 : passez de l'une à l'autre pour voir ce qui change.</b></div>
       <div class="pal-head" id="palHeadOld"></div>
       <div class="pal-rows" id="palRowsOld"></div>
+    </div>
+  </div>
+  <div class="progress"><i></i></div>
+  <div class="folio"></div>
+</section>
+
+<!-- === L'ÉCHELLE — AVANT === -->
+<section class="slide" data-title="L'échelle — avant" data-sec="III · La nouvelle palette">
+  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>III</b> · La nouvelle palette</span></div>
+  <div class="canvas">
+    <div class="kicker">L'échelle — avant</div>
+    <h2>Neuf familles,<br><span class="hi">neuf trajectoires</span></h2>
+    <div class="chart" id="chartLegacy">
+      <div class="ct"><span>Les 9 familles actuelles : à quel point chaque nuance est claire</span><em>mesuré sur les couleurs en production · mêmes axes que la slide 15</em></div>
+    </div>
+    <div class="exit" style="margin-top:26px">
+      <span class="lbl">Au même niveau</span>
+      <span>Le « niveau 100 » du gris est presque noir, celui du jaune presque blanc. <b style="font-family:var(--disp);font-weight:800">Le numéro ne veut rien dire.</b></span>
     </div>
   </div>
   <div class="progress"><i></i></div>
@@ -859,7 +878,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="kicker">Le nuancier — après</div>
     <h2>Sept familles,<br><span class="hi">des rampes complètes</span></h2>
     <div class="palette">
-      <div class="pal-note">Même grille que la slide précédente. Les rampes sont complètes et régulières, une famille disparaît, et cinq couleurs de marque restent verrouillées.</div>
+      <div class="pal-note">Même grille que la slide 12. Les rampes sont complètes et régulières, une famille disparaît, et cinq couleurs de marque restent verrouillées.</div>
       <div class="pal-head" id="palHead"></div>
       <div class="pal-rows" id="palRows"></div>
       <div class="anchors">
@@ -876,25 +895,6 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="folio"></div>
 </section>
 
-<!-- === L'ÉCHELLE — AVANT === -->
-<section class="slide" data-title="L'échelle — avant" data-sec="III · La nouvelle palette">
-  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec"><b>III</b> · La nouvelle palette</span></div>
-  <div class="canvas">
-    <div class="kicker">L'échelle — avant</div>
-    <h2>Neuf familles,<br><span class="hi">neuf trajectoires</span></h2>
-    <div class="chart" id="chartLegacy">
-      <div class="ct"><span>Les 9 familles actuelles : à quel point chaque nuance est claire</span><em>mesuré sur les couleurs en production · mêmes axes que la slide suivante</em></div>
-    </div>
-    <div class="exit" style="margin-top:26px">
-      <span class="lbl">Au même niveau</span>
-      <span>Le « niveau 100 » du gris est presque noir, celui du jaune presque blanc. <b style="font-family:var(--disp);font-weight:800">Le numéro ne veut rien dire.</b></span>
-    </div>
-  </div>
-  <div class="progress"><i></i></div>
-  <div class="folio"></div>
-</section>
-
 <!-- === 14 — LE LADDER COMMUN === -->
 <section class="slide" data-title="L'échelle — après" data-sec="III · La nouvelle palette">
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
@@ -903,14 +903,8 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="kicker">L'échelle — après</div>
     <h2>Une seule échelle,<br><span class="hi">sept familles</span> dessus</h2>
     <p class="lede">OKLCH décrit une couleur comme l'œil la perçoit. Le « niveau 500 » est donc aussi clair dans les sept familles.</p>
-    <div class="kpis four" style="margin-top:24px">
-      <div class="kpi on"><div class="v">≤ 0,0013</div><div class="l">d'écart de clarté entre deux familles au même niveau.</div><div class="bar"></div></div>
-      <div class="kpi"><div class="v">7 × 8</div><div class="l">familles de couleur × nuances.</div></div>
-      <div class="kpi"><div class="v">+ 10</div><div class="l">nuances de gris.</div></div>
-      <div class="kpi"><div class="v">5</div><div class="l">couleurs de marque verrouillées.</div></div>
-    </div>
     <div class="chart" id="chartNew">
-      <div class="ct"><span>Mêmes axes que la slide précédente</span><em>le ruban gris est l'échelle commune · chaque famille a sa colonne pour rester visible</em></div>
+      <div class="ct"><span>Mêmes axes que la slide 13</span><em>le ruban gris est l'échelle commune · chaque famille a sa colonne pour rester visible</em></div>
     </div>
     <div class="exit" style="margin-top:26px">
       <span class="lbl">Ce que ça débloque</span>

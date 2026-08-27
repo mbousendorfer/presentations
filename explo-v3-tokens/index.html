@@ -184,37 +184,6 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .st-card.on .k{color:var(--invert-fg-soft)}
 
 /* ==========================================================================
-   === COMPOSANT : quiz d'ouverture ========================================
-   Trois questions cliquables. La réponse ne se montre qu'au clic : c'est le
-   clic qui fait la démonstration — personne ne devine.
-   ========================================================================== */
-.quiz{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:auto 0}
-.qz{border:3px solid var(--border-strong);padding:24px 26px 26px;display:flex;flex-direction:column}
-.qz-sw{height:56px;border:1px solid var(--swatch-border)}
-.qz-h{font:700 13px/1 var(--mono);letter-spacing:.14em;color:var(--text-secondary);margin-top:14px}
-.qz-q{font-family:var(--disp);font-weight:800;font-size:28px;line-height:1.1;letter-spacing:-.026em;margin-top:6px}
-.qz-opts{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:9px}
-.qz-opts li{font-family:var(--sans);font-size:18px;line-height:1.25;padding:12px 15px;
-  border:2px solid var(--border-subtle);cursor:pointer;transition:border-color .12s,background .12s}
-.qz-opts li:hover{border-color:var(--blue)}
-.qz.done .qz-opts li{cursor:default;pointer-events:none}
-.qz.done .qz-opts li:not(.ok){opacity:.4}
-.qz.done .qz-opts li.miss{text-decoration:line-through}
-.qz.done .qz-opts li.ok{background:var(--invert-bg);color:var(--invert-fg);
-  border-color:transparent;font-weight:700}
-.qz.done .qz-opts li.ok::after{content:'\2713';float:right;margin-left:10px}
-/* la réponse occupe sa place dès le départ : révéler ne décale rien */
-.qz-rv{font-family:var(--sans);font-size:17px;line-height:1.4;color:var(--text-secondary);
-  margin-top:auto;padding-top:18px;opacity:0;transition:opacity .22s}
-.qz.done .qz-rv{opacity:1}
-.qz-rv b{color:var(--text-default)}
-/* la chute n'arrive qu'une fois les trois cartes retournées */
-.quiz-out{margin-top:24px;border-top:3px solid var(--border-strong);padding-top:18px;
-  font-family:var(--disp);font-weight:800;font-size:26px;line-height:1.2;letter-spacing:-.024em;
-  opacity:0;transform:translateY(-6px);transition:opacity .3s,transform .3s}
-.quiz-out.on{opacity:1;transform:none}
-
-/* ==========================================================================
    === COMPOSANT : bandeau de chiffres clés ================================
    ========================================================================== */
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);border:3px solid var(--border-strong);margin-top:26px}
@@ -610,7 +579,6 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
 [data-theme="dark"] .st-card.on,
 [data-theme="dark"] .kpi.on,
 [data-theme="dark"] .tier.on{box-shadow:inset 0 0 0 1px var(--invert-border)}
-[data-theme="dark"] .qz.done .qz-opts li.ok{box-shadow:inset 0 0 0 1px var(--invert-border)}
 /* les captures Figma sont sur fond sombre : on retire le cadre clair */
 [data-theme="dark"] .shot img{background:transparent}
 /* le liseré du code inline */
@@ -660,58 +628,6 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="folio"></div>
 </section>
 
-<!-- === 02 — QUIZ D'OUVERTURE === -->
-<section class="slide" data-title="Quiz — ces couleurs veulent dire quoi ?" data-sec="Les bases">
-  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec">Les bases</span></div>
-  <div class="canvas">
-    <div class="kicker">Pour commencer — trois questions</div>
-    <h2>Ces couleurs sont dans le produit.<br>Elles veulent dire <span class="hi">quoi</span> ?</h2>
-    <div class="quiz">
-
-      <div class="qz">
-        <div class="qz-sw" style="background:#6554C0"></div>
-        <div class="qz-h">#6554C0</div>
-        <div class="qz-q">Le violet</div>
-        <ul class="qz-opts">
-          <li>Une erreur</li>
-          <li data-ok>Une option que le plan ne couvre pas</li>
-          <li>Un élément sélectionné</li>
-        </ul>
-        <p class="qz-rv"><b>feature-lock.</b> La fonctionnalité est là, mais pas dans ce plan. Rien dans la couleur ne le dit.</p>
-      </div>
-
-      <div class="qz">
-        <div class="qz-sw" style="background:#0FA09B"></div>
-        <div class="qz-h">#0FA09B</div>
-        <div class="qz-q">Le menthol</div>
-        <ul class="qz-opts">
-          <li>Un succès</li>
-          <li>Un message non lu</li>
-          <li data-ok>Rien de défini</li>
-        </ul>
-        <p class="qz-rv"><b>Aucun rôle.</b> Six niveaux dans la palette, pas un seul token système qui s'en serve. On le pose à l'instinct.</p>
-      </div>
-
-      <div class="qz">
-        <div class="qz-sw" style="background:#FFE91F"></div>
-        <div class="qz-h">#FFE91F</div>
-        <div class="qz-q">Le jaune</div>
-        <ul class="qz-opts">
-          <li data-ok>Un avertissement</li>
-          <li>Un favori</li>
-          <li>Une nouveauté</li>
-        </ul>
-        <p class="qz-rv"><b>warning.</b> Facile, celle-là. Sauf qu'écrit sur du blanc, il fait 1,24:1 — illisible.</p>
-      </div>
-
-    </div>
-    <div class="quiz-out">Une couleur ne dit pas à quoi elle sert. Aujourd'hui, la réponse est dans la tête de quelqu'un.</div>
-  </div>
-  <div class="progress"><i></i></div>
-  <div class="folio"></div>
-</section>
-
 <!-- === 02 — DE QUOI ON PARLE (le pont entre la promesse et le sujet) === -->
 <section class="slide" data-title="De quoi on parle" data-sec="Les bases">
   <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
@@ -746,12 +662,12 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="kicker">Sommaire</div>
     <h2>Le chantier, en <span class="hi">six temps</span></h2>
     <nav class="toc">
-      <a data-go="5"><span class="rn">I</span><span class="rt">Pourquoi maintenant</span><span class="rp">05 — 07</span></a>
-      <a data-go="8"><span class="rn">II</span><span class="rt">Le constat</span><span class="rp">08 — 11</span></a>
-      <a data-go="12"><span class="rn">III</span><span class="rt">La nouvelle palette</span><span class="rp">12 — 17</span></a>
-      <a data-go="18"><span class="rn">IV</span><span class="rt">La couche des rôles</span><span class="rp">18 — 21</span></a>
-      <a data-go="22"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">22 — 25</span></a>
-      <a data-go="26"><span class="rn">VI</span><span class="rt">Le déploiement</span><span class="rp">26 — 28</span></a>
+      <a data-go="4"><span class="rn">I</span><span class="rt">Pourquoi maintenant</span><span class="rp">04 — 06</span></a>
+      <a data-go="7"><span class="rn">II</span><span class="rt">Le constat</span><span class="rp">07 — 10</span></a>
+      <a data-go="11"><span class="rn">III</span><span class="rt">La nouvelle palette</span><span class="rp">11 — 16</span></a>
+      <a data-go="17"><span class="rn">IV</span><span class="rt">La couche des rôles</span><span class="rp">17 — 20</span></a>
+      <a data-go="21"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">21 — 24</span></a>
+      <a data-go="25"><span class="rn">VI</span><span class="rt">Le déploiement</span><span class="rp">25 — 27</span></a>
     </nav>
   </div>
   <div class="progress"><i></i></div>
@@ -765,7 +681,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">I</div>
     <h2 class="dv-t">Pourquoi maintenant</h2>
     <p class="dv-p">Des PM et des devs vont composer des écrans. Il leur faut des règles. On vise deux choses : une accessibilité qu'on peut mesurer, et un système qu'une IA sait lire.</p>
-    <div class="dv-r">05 — 07</div>
+    <div class="dv-r">04 — 06</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -830,7 +746,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">II</div>
     <h2 class="dv-t">Le constat</h2>
     <p class="dv-p">Ce qui manque dans nos outils, et ce qui cloche dans la palette.</p>
-    <div class="dv-r">08 — 11</div>
+    <div class="dv-r">07 — 10</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -916,7 +832,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">III</div>
     <h2 class="dv-t">La nouvelle palette</h2>
     <p class="dv-p">Sept familles calées sur la même échelle de clarté. On n'y pioche plus une couleur : on en déduit une règle.</p>
-    <div class="dv-r">12 — 17</div>
+    <div class="dv-r">11 — 16</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1034,7 +950,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">IV</div>
     <h2 class="dv-t">La couche des rôles</h2>
     <p class="dv-p">Comment on nomme un rôle, et pourquoi ce nom vaut partout.</p>
-    <div class="dv-r">18 — 21</div>
+    <div class="dv-r">17 — 20</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1150,7 +1066,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">V</div>
     <h2 class="dv-t">Avant / après</h2>
     <p class="dv-p">Les mêmes composants, rebranchés sur les rôles. Ce qui s'aligne, ce qui se complète, et ce qui disparaît faute d'être utilisable.</p>
-    <div class="dv-r">22 — 25</div>
+    <div class="dv-r">21 — 24</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1231,7 +1147,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">VI</div>
     <h2 class="dv-t">Le déploiement</h2>
     <p class="dv-p">Trois étapes, dans cet ordre, avec le même critère de sortie à chaque fois. Puis quatre PR, une par tribe.</p>
-    <div class="dv-r">26 — 28</div>
+    <div class="dv-r">25 — 27</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1743,28 +1659,8 @@ let buffer='',bt;
 document.querySelector('.viewport').addEventListener('click',e=>{
   if(document.body.classList.contains('editing')) return;
   if(e.target.closest('[data-go]')) return;
-  if(e.target.closest('.quiz')) return;   /* le quiz gère ses propres clics */
   (e.clientX>innerWidth*.5?next:prev)();
 });
-/* quiz d'ouverture : un clic par carte, la bonne réponse se révèle, la chute
-   n'apparaît qu'une fois les trois cartes retournées */
-document.querySelectorAll('.qz').forEach(q=>{
-  q.querySelectorAll('.qz-opts li').forEach(li=>{
-    li.addEventListener('click',e=>{
-      e.stopPropagation();
-      if(q.classList.contains('done')) return;
-      q.classList.add('done');
-      q.querySelector('[data-ok]').classList.add('ok');
-      if(!li.hasAttribute('data-ok')) li.classList.add('miss');
-      const quiz=q.closest('.quiz'),canvas=quiz.parentNode;
-      if(quiz.querySelectorAll('.qz.done').length===quiz.querySelectorAll('.qz').length){
-        const out=canvas.querySelector('.quiz-out');
-        if(out) out.classList.add('on');
-      }
-    });
-  });
-});
-
 document.querySelectorAll('[data-go]').forEach(a=>{
   a.addEventListener('click',e=>{e.stopPropagation();go(parseInt(a.dataset.go,10)-1);});
 });

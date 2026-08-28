@@ -449,13 +449,6 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 /* ==========================================================================
    === SLIDE 02 : sommaire =================================================
    ========================================================================== */
-.toc{display:grid;grid-template-columns:1fr 1fr;column-gap:70px;border-top:3px solid var(--border-strong);margin:auto 0}
-.toc a{display:grid;grid-template-columns:74px 1fr auto;gap:18px;align-items:baseline;text-decoration:none;color:inherit;
-  padding:34px 0;border-bottom:1px solid var(--border-subtle);cursor:pointer}
-.toc a:hover{background:var(--orange-soft)}
-.toc .rn{font:700 16px/1 var(--mono);letter-spacing:.14em;color:var(--accent)}
-.toc .rt{font-family:var(--disp);font-weight:800;font-size:34px;letter-spacing:-.028em}
-.toc .rp{font:500 14px/1 var(--mono);color:var(--ink-400)}
 
 /* ==========================================================================
    === SLIDE 17 : clôture ==================================================
@@ -477,7 +470,7 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .slide.active .claim,.slide.active .kpi,.slide.active .shot,
 .slide.active .panel,.slide.active .ba-row,.slide.active .tier,
 .slide.active .step,.slide.active .rule-strip,.slide.active .exit,
-.slide.active .toc a,.slide.active .recap div,.slide.active .anchors,
+.slide.active .recap div,.slide.active .anchors,
 .slide.active .cover .sub,.slide.active .cover .desc,.slide.active .cover h1{
   animation:rise .6s cubic-bezier(.2,.7,.2,1) backwards}
 .slide.active .topbar{animation-delay:.02s}
@@ -488,18 +481,18 @@ code,.tk{font-family:var(--mono);font-size:.86em;font-weight:500;background:var(
 .slide.active .cover .desc{animation-delay:.58s}
 .slide.active .claim:nth-child(1),.slide.active .kpi:nth-child(1),.slide.active .shot:nth-child(1),
 .slide.active .panel:nth-child(1),.slide.active .ba-row:nth-child(1),.slide.active .tier:nth-child(1),
-.slide.active .step:nth-child(1),.slide.active .toc a:nth-child(1),.slide.active .recap div:nth-child(1){animation-delay:.28s}
+.slide.active .step:nth-child(1),.slide.active .recap div:nth-child(1){animation-delay:.28s}
 .slide.active .claim:nth-child(2),.slide.active .kpi:nth-child(2),.slide.active .shot:nth-child(2),
 .slide.active .panel:nth-child(2),.slide.active .ba-row:nth-child(2),.slide.active .tier:nth-child(2),
-.slide.active .step:nth-child(2),.slide.active .toc a:nth-child(2),.slide.active .recap div:nth-child(2){animation-delay:.34s}
+.slide.active .step:nth-child(2),.slide.active .recap div:nth-child(2){animation-delay:.34s}
 .slide.active .claim:nth-child(3),.slide.active .kpi:nth-child(3),.slide.active .shot:nth-child(3),
 .slide.active .ba-row:nth-child(3),.slide.active .tier:nth-child(3),
-.slide.active .step:nth-child(3),.slide.active .toc a:nth-child(3),.slide.active .recap div:nth-child(3){animation-delay:.4s}
-.slide.active .claim:nth-child(4),.slide.active .kpi:nth-child(4),.slide.active .toc a:nth-child(4),.slide.active .recap div:nth-child(4){animation-delay:.46s}
-.slide.active .claim:nth-child(5),.slide.active .toc a:nth-child(5),.slide.active .recap div:nth-child(5){animation-delay:.52s}
-.slide.active .claim:nth-child(6),.slide.active .toc a:nth-child(6),.slide.active .recap div:nth-child(6){animation-delay:.58s}
-.slide.active .claim:nth-child(7),.slide.active .toc a:nth-child(7),.slide.active .recap div:nth-child(7){animation-delay:.64s}
-.slide.active .claim:nth-child(n+8),.slide.active .toc a:nth-child(n+8){animation-delay:.7s}
+.slide.active .step:nth-child(3),.slide.active .recap div:nth-child(3){animation-delay:.4s}
+.slide.active .claim:nth-child(4),.slide.active .kpi:nth-child(4),.slide.active .recap div:nth-child(4){animation-delay:.46s}
+.slide.active .claim:nth-child(5),.slide.active .recap div:nth-child(5){animation-delay:.52s}
+.slide.active .claim:nth-child(6),.slide.active .recap div:nth-child(6){animation-delay:.58s}
+.slide.active .claim:nth-child(7),.slide.active .recap div:nth-child(7){animation-delay:.64s}
+.slide.active .claim:nth-child(n+8){animation-delay:.7s}
 .slide.active .rule-strip,.slide.active .exit{animation-delay:.5s}
 .slide.active .anchors{animation-delay:.9s}
 
@@ -654,26 +647,6 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
   <div class="folio"></div>
 </section>
 
-<!-- === 02 — SOMMAIRE === -->
-<section class="slide" data-title="Sommaire" data-sec="Sommaire">
-  <div class="cols"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-  <div class="topbar"><span>Agorapulse — Design System</span><span class="sec">Design Tokens V3</span></div>
-  <div class="canvas">
-    <div class="kicker">Sommaire</div>
-    <h2>Le chantier, en <span class="hi">six temps</span></h2>
-    <nav class="toc">
-      <a data-go="4"><span class="rn">I</span><span class="rt">Pourquoi maintenant</span><span class="rp">04 — 06</span></a>
-      <a data-go="7"><span class="rn">II</span><span class="rt">Le constat</span><span class="rp">07 — 10</span></a>
-      <a data-go="11"><span class="rn">III</span><span class="rt">La nouvelle palette</span><span class="rp">11 — 16</span></a>
-      <a data-go="17"><span class="rn">IV</span><span class="rt">La couche des rôles</span><span class="rp">17 — 20</span></a>
-      <a data-go="21"><span class="rn">V</span><span class="rt">Avant / après</span><span class="rp">21 — 24</span></a>
-      <a data-go="25"><span class="rn">VI</span><span class="rt">Le déploiement</span><span class="rp">25 — 27</span></a>
-    </nav>
-  </div>
-  <div class="progress"><i></i></div>
-  <div class="folio"></div>
-</section>
-
 <!-- === 08 — SECTION II === -->
 <section class="slide divider" data-title="I · Pourquoi maintenant" data-sec="I · Pourquoi maintenant">
   <div class="topbar"><span>Agorapulse — Design System</span><span class="sec">Design Tokens V3</span></div>
@@ -681,7 +654,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">I</div>
     <h2 class="dv-t">Pourquoi maintenant</h2>
     <p class="dv-p">Des PM et des devs vont composer des écrans. Il leur faut des règles. On vise deux choses : une accessibilité qu'on peut mesurer, et un système qu'une IA sait lire.</p>
-    <div class="dv-r">04 — 06</div>
+    <div class="dv-r">03 — 05</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -746,7 +719,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">II</div>
     <h2 class="dv-t">Le constat</h2>
     <p class="dv-p">Ce qui manque dans nos outils, et ce qui cloche dans la palette.</p>
-    <div class="dv-r">07 — 10</div>
+    <div class="dv-r">06 — 09</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -832,7 +805,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">III</div>
     <h2 class="dv-t">La nouvelle palette</h2>
     <p class="dv-p">Sept familles calées sur la même échelle de clarté. On n'y pioche plus une couleur : on en déduit une règle.</p>
-    <div class="dv-r">11 — 16</div>
+    <div class="dv-r">10 — 15</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -950,7 +923,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">IV</div>
     <h2 class="dv-t">La couche des rôles</h2>
     <p class="dv-p">Comment on nomme un rôle, et pourquoi ce nom vaut partout.</p>
-    <div class="dv-r">17 — 20</div>
+    <div class="dv-r">16 — 19</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1066,7 +1039,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">V</div>
     <h2 class="dv-t">Avant / après</h2>
     <p class="dv-p">Les mêmes composants, rebranchés sur les rôles. Ce qui s'aligne, ce qui se complète, et ce qui disparaît faute d'être utilisable.</p>
-    <div class="dv-r">21 — 24</div>
+    <div class="dv-r">20 — 23</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1147,7 +1120,7 @@ body.editing [contenteditable]:focus{outline:2px solid var(--orange);outline-off
     <div class="dv-n">VI</div>
     <h2 class="dv-t">Le déploiement</h2>
     <p class="dv-p">Trois étapes, dans cet ordre, avec le même critère de sortie à chaque fois. Puis quatre PR, une par tribe.</p>
-    <div class="dv-r">25 — 27</div>
+    <div class="dv-r">24 — 26</div>
   </div></div>
   <div class="progress"><i></i></div>
   <div class="folio"></div>
@@ -1658,11 +1631,7 @@ let buffer='',bt;
 /* clic / tap : moitié droite = suivant, moitié gauche = précédent */
 document.querySelector('.viewport').addEventListener('click',e=>{
   if(document.body.classList.contains('editing')) return;
-  if(e.target.closest('[data-go]')) return;
   (e.clientX>innerWidth*.5?next:prev)();
-});
-document.querySelectorAll('[data-go]').forEach(a=>{
-  a.addEventListener('click',e=>{e.stopPropagation();go(parseInt(a.dataset.go,10)-1);});
 });
 
 /* swipe tactile */
